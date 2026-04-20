@@ -36,14 +36,44 @@ class LoupGarou(Carte):
         pass
 
 class Chasseur(Carte):
-    def __init__(self):
+    def __init__(self, joueur_qui_a_la_carte):
             self.nom="Chasseur", 
             self.description="La capacité de votre carte est que, lorsque vous mourrez, vous pouvez tuer n'importe quel joueur en vie. Faites le bon choix avant votre dernier souffle..."
+            self.joueur_qui_a_la_carte = joueur_qui_a_la_carte
+
+    
+    def capacite_chasseur(self):
+    
+     if self.joueur_qui_a_la_carte == False:
+        print("Voici la liste des joueurs : ")
+        
+        for i in range(len(self.liste_joueurs)):
+            print(f"{i + 1} - {self.liste_joueurs[i].nom}")    #Est ce que ca marche comme ca en utilisant le self.liste_joueurs ou je dois changer qqch ?
+
+        n = int(input("Quel est le numéro du joueur que vous souhaitez tuer avant de mourir ? "))
+        
+        self.liste_joueurs[n-1].mourir()
+
+     else:
+        print("Vous ne pouvez pas encore utiliser votre capacité.")
+
+
         
 class Voyante(Carte):
     def __init__(self):
             self.nom="Voyante", 
             self.description="La capacité de votre carte est que, durant chaque tour pendant la nuit, vous avez le droit de connaître la carte du joueur de votre choix..."
+    
+    def capacite_voyante(self):
+            
+            print("Voici la liste des joueurs : ")
+            for i in range(len(self.liste_joueurs)):
+                print(f"{i + 1} - {self.liste_joueurs[i].nom}")
+
+            n = int(input("Quelle est le numéro du joueur que vous souhaitez voir ?"))
+
+            carte_de_la_cible = self.liste_joueurs[n-1].carteatt.nom
+            print(f"La carte de {self.liste_joueurs[n-1].nom} est : {carte_de_la_cible}")
 
 class PetiteFille(Carte):
     def __init__(self):
@@ -76,6 +106,7 @@ class Joueur:
         self.envie = True
         self.nom = nom
         self.carteatt = carteatt    #carteatt pour carte attribuée
+        self.amoureux = None
     
     def mourir(self):
         self.envie = False

@@ -5,6 +5,7 @@ class Joueur:
         self.envie = True
         self.nom = nom
         self.carteatt = carteatt    #carteatt pour carte attribuée
+        self.amoureux = None
     
     def mourir(self):
         self.envie = False
@@ -15,6 +16,5 @@ class Joueur:
         print("Le joueur", self.nom, "a été ressucité cette nuit !!!")
     
     def voter(self, cible):
-        #Comment faire pour créer une liste pour chaque joueur enregistré 
         vote = int(input(f"{self.nom}, qui votez-vous (insérer nombre) ? "))
         return vote

@@ -1,3 +1,5 @@
+import random
+
 class Partie:
     def __init__(self, mdp):
         self.mdp = mdp
@@ -11,8 +13,66 @@ class Partie:
         print(nom_joueur, "a rejoint la partie !")
 
     def distribuer_cartes (self):
-        #Comment faire en sorte de distribuer une carte pour chaque joueur selon la composition de cartes dans la partie (Elle qui dépend du nb. de joueurs)
-        pass
+        self.nombre = len(self.liste_joueurs)
+        self.pioche = []
+
+        print("Dans ce jeu du loup-garou, vous devez être de 7 à 15 joueurs maximum pour jouer")
+
+        if self.nombre == 7:
+             self.pioche = [LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 8:
+             self.pioche = [LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 9:
+             self.pioche = [LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), Cupidon(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 10:
+             self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 11:
+             self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Cupidon(), PetiteFille(), Villageois(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 12:
+             self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 13:
+             self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 14:
+             self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        elif self.nombre == 15:
+             self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois()]
+             print("La composition de la partie est :")
+             for carte in pioche:
+                print("-", carte.nom)
+        
+        random.shuffle (self.pioche)
+
+        for i in range (self.nombre):
+             self.liste_joueurs[i].carteatt = pioche[i]
+
+        print("Les rôles sont attribuées !!!")
+        
+
+
 
     def vote_de_jour(self):
 
@@ -25,3 +85,9 @@ class Partie:
         for joueur in self.liste_joueurs:
             vote = joueur.voter() - 1
             liste_votes[vote] += 1
+
+
+    
+    def run(self):
+
+        print("Que le village s'endorme...")

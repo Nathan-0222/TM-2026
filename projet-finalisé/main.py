@@ -212,6 +212,14 @@ class Partie:
             liste_votes[vote] += 1
 
 
+    
+    def run(self):
+
+        print("Que le village s'endorme...")
+
+        
+
+
 partie = Partie("ciao")
 
 c1 = Sorciere()

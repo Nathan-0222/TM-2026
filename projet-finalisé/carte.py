@@ -36,15 +36,16 @@ class LoupGarou(Carte):
         pass
 
 class Chasseur(Carte):
-    def __init__(self, joueur_qui_a_la_carte):
+    def __init__(self, joueur_qui_a_la_carte=None, liste_joueurs=None):
             self.nom="Chasseur", 
             self.description="La capacité de votre carte est que, lorsque vous mourrez, vous pouvez tuer n'importe quel joueur en vie. Faites le bon choix avant votre dernier souffle..."
             self.joueur_qui_a_la_carte = joueur_qui_a_la_carte
+            self.liste_joueurs = liste_joueurs
 
     
     def capacite_chasseur(self):
     
-     if self.joueur_qui_a_la_carte == False:
+     if self.joueur_qui_a_la_carte.envie == False:
         print("Voici la liste des joueurs : ")
         
         for i in range(len(self.liste_joueurs)):

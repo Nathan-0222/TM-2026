@@ -8,6 +8,8 @@ class Partie:
         self.liste_joueurs = [] 
         self.loups_garous = []
         self.villageois = []
+        self.sorcière = None
+        self.petite_fille = None
 
     def ajouter_joueur(self):
 
@@ -76,7 +78,7 @@ class Partie:
         random.shuffle (self.pioche)
 
         for i in range (self.nombre):
-             self.liste_joueurs[i].carteatt = pioche[i]
+             self.liste_joueurs[i].carteatt = self.pioche[i]
 
         print("Les rôles sont attribuées !!!")
         
@@ -85,22 +87,71 @@ class Partie:
 
     def vote_de_jour(self):
 
-        print("Voici la liste des joueurs : ")
-        for i in range(len(self.liste_joueurs)):
-            print(f"{i + 1} - {self.liste_joueurs[i].nom}")
+        self.affiche_joueurs()
 
         liste_votes = [0] * len(self.liste_joueurs)
 
         for joueur in self.liste_joueurs:
             vote = joueur.voter() - 1
             liste_votes[vote] += 1
+        
+        index_max = liste_votes.index(max(liste_votes))
+        print("Le joueur", self.liste_joueurs[index_max].nom,"est mort cette nuit")
+        self.liste_joueurs[index_max].mourir()
+
+    def vérification_victoire(self):
+
+        loups = 0
+        villageois = 0
+        for j in self.liste_joueurs:
+            if j.envie == True:
+                if j.carteatt.nom == "Loup-Garou":
+                    loups += 1
+                else:
+                    villageois += 1
+
+        if loups == 0 :
+            print("\nVICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !")
+            return True
+        elif loups >= villageois:
+            print("\nDÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village.")
+            return True
+        else:
+            return False
+    
+    def affiche_joueurs(self):
+        print("Voici la liste des joueurs : ")
+        for i in range(len(self.liste_joueurs)):
+            if self.liste_joueurs[i].envie:
+                print(f"{i + 1} - {self.liste_joueurs[i].nom}")
+            else:
+                print(f"{i + 1} - décédé")
+
+        
+    def vote_de_nuit(self):
+        
+        self.affiche_joueurs()
+
+        liste_votes = [0] * len(self.liste_joueurs)
+
+        for j in self.liste_joueurs:
+            print(j.carteatt.nom)
+            if j.carteatt.nom == "Loup-Garou" and j.envie == True:
+                vote = j.voter() - 1
+                liste_votes[vote] += 1
+        
+        index_max = liste_votes.index(max(liste_votes))
+        victime = self.liste_joueurs[index_max]
+        return victime
+        
+    
 
 
     
     def run(self):
 
-        Partie.ajouter_joueur()
-        Partie.distribuer_cartes()
+        self.ajouter_joueur()
+        self.distribuer_cartes()
 
         print("\n=== DÉBUT DE LA PARTIE ===")
         premiere_nuit = True 
@@ -128,7 +179,7 @@ class Partie:
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Voyante" and j.envie == True:
                     print("\nLa Voyante se réveille.")
-                    j.carteatt.capacite_voyante() 
+                    j.carteatt.capacite_voyante(self.liste_joueurs) 
                     print("La Voyante se rendort.")
 
             print("\nLes Loups-Garous se réveillent pour choisir leur victime...")
@@ -137,17 +188,16 @@ class Partie:
                 if j.carteatt.nom == "Petite-Fille" and j.envie == True:
                     print("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
 
-            for j in self.liste_joueurs:
-                if j.carteatt.nom == "Loup-Garou" and j.envie == True:
-                    j.carteatt.voter_victime() 
-                    # Vote des loups à faire !!!!!!!!!!!!!!!!!
+            victime = self.vote_de_nuit()
+
+
             print("Les Loups-Garous se rendorment.")
 
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Sorciere" and j.envie == True:
                     print("\nLa Sorcière se réveille.")
                     # Comment gérer le passement de la victime des loups à la sorcière ??????????????
-                    j.carteatt.capacite_sorciere() 
+                    j.carteatt.capacite_sorciere(victime, self.liste_joueurs) 
                     print("La Sorcière se rendort.")
 
             # 2. PHASE DE JOUR (RÉVEIL)
@@ -157,56 +207,15 @@ class Partie:
             # Regarder si Victime est morte ou pas au final et l'annoncer !!!!!!!
             
             # VÉRIFICATION DE VICTOIRE
-            loups = 0
-            villageois = 0
-            for j in self.liste_joueurs:
-                if j.envie == True:
-                    if j.carteatt.nom == "Loup-Garou":
-                        loups += 1
-                    else:
-                        villageois += 1
-
-            if loups == 0:
-                print("\nVICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !")
-                break 
-            elif loups >= villageois:
-                print("\nDÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village.")
+            
+            if self.vérification_victoire():
                 break
        
             # 3. PHASE DE JOUR (LE VOTE)
           
-            print("\nIl est temps de débattre et de voter pour éliminer un suspect.")
-            
-            resultats_votes = [0] * len(self.liste_joueurs)
-            
-            for j in self.liste_joueurs:
-                if j.envie == True:
-                    # On demande à chaque joueur vivant de voter
-                    print(f"\n C'est à {j.nom} de voter.")
-                    choix = j.voter(None) 
-                    resultats_votes[choix - 1] += 1 
-            
-            # Résolution du vote
-            max_votes = max(resultats_votes)
-            index_elimine = resultats_votes.index(max_votes)
-            joueur_elimine = self.liste_joueurs[index_elimine]
-            
-            print(f"\n Le village a tranché. {joueur_elimine.nom} est condamné.")
-            joueur_elimine.mourir()
+            self.vote_de_jour()
             
             # --- VÉRIFICATION DE VICTOIRE (après le vote) ---
-            loups = 0
-            villageois = 0
-            for j in self.liste_joueurs:
-                if j.envie == True:
-                    if j.carteatt.nom == "Loup-Garou":
-                        loups += 1
-                    else:
-                        villageois += 1
 
-            if loups == 0:
-                print("\nVICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !")
-                break
-            elif loups >= villageois:
-                print("\nDÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village.")
+            if self.vérification_victoire():
                 break

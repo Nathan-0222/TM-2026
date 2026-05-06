@@ -1,6 +1,7 @@
 class Carte:
     # Classe mère 
-    # def __init__(self):
+    def __init__(self):
+        pass
 
     
     def afficher_description(self):
@@ -26,64 +27,82 @@ class Sorciere(Carte):
             self.potion_mort -= 1
         else:
             print("Pas de potion disponible")
+
+    def capacite_sorciere(self, victime, liste_joueurs):
+        print(f"Le joueur {victime.nom} a été choisi par les loups.")
+        x = int(input("Que voulez vous utiliser, choisissez 1 pour potion de vie, 2 pour potion de mort et 3 pour ne rien faire :"))
+        if x == 1:
+            self.utiliser_potion_vie()
+        elif x == 2:
+
+            print("Voici la liste des joueurs : ")
+            for i in range(len(liste_joueurs)):
+                print(f"{i + 1} - {liste_joueurs[i].nom}")
+            
+            victime2 = int(input("Quel est le numéro de la personne que vous voulez tuer ?"))
+            liste_joueurs[victime2-1].mourir()   
+        else:
+            victime.mourir()
+
+         
         
 class LoupGarou(Carte):
     def __init__(self):
-            self.nom="Loup-Garou", 
-            self.description="La capacité de votre carte est que, avec vos coéquipiers durant la nuit, vous pouvez en vous mettant d'accord tuer un joueur. Votre but est que vous soyez les derniers survivants !!!"
+        self.nom="Loup-Garou"
+        print(self.nom) 
+        self.description="La capacité de votre carte est que, avec vos coéquipiers durant la nuit, vous pouvez en vous mettant d'accord tuer un joueur. Votre but est que vous soyez les derniers survivants !!!"
     
-    def voter_victime(self):
-        pass
+
 
 class Chasseur(Carte):
     def __init__(self, joueur_qui_a_la_carte=None, liste_joueurs=None):
-            self.nom="Chasseur", 
-            self.description="La capacité de votre carte est que, lorsque vous mourrez, vous pouvez tuer n'importe quel joueur en vie. Faites le bon choix avant votre dernier souffle..."
-            self.joueur_qui_a_la_carte = joueur_qui_a_la_carte
-            self.liste_joueurs = liste_joueurs
+        self.nom="Chasseur"
+        self.description="La capacité de votre carte est que, lorsque vous mourrez, vous pouvez tuer n'importe quel joueur en vie. Faites le bon choix avant votre dernier souffle..."
+        self.joueur_qui_a_la_carte = joueur_qui_a_la_carte
+        self.liste_joueurs = liste_joueurs
 
     
     def capacite_chasseur(self):
     
-     if self.joueur_qui_a_la_carte.envie == False:
-        print("Voici la liste des joueurs : ")
+        if self.joueur_qui_a_la_carte.envie == False:
+            print("Voici la liste des joueurs : ")
         
-        for i in range(len(self.liste_joueurs)):
-            print(f"{i + 1} - {self.liste_joueurs[i].nom}")    #Est ce que ca marche comme ca en utilisant le self.liste_joueurs ou je dois changer qqch ?
+            for i in range(len(self.liste_joueurs)):
+                print(f"{i + 1} - {self.liste_joueurs[i].nom}")    #Est ce que ca marche comme ca en utilisant le self.liste_joueurs ou je dois changer qqch ?
 
-        n = int(input("Quel est le numéro du joueur que vous souhaitez tuer avant de mourir ? "))
-        
-        self.liste_joueurs[n-1].mourir()
+            n = int(input("Quel est le numéro du joueur que vous souhaitez tuer avant de mourir ? "))
+            
+            self.liste_joueurs[n-1].mourir()
 
-     else:
-        print("Vous ne pouvez pas encore utiliser votre capacité.")
+        else:
+            print("Vous ne pouvez pas encore utiliser votre capacité.")
 
 
         
 class Voyante(Carte):
     def __init__(self):
-            self.nom="Voyante", 
-            self.description="La capacité de votre carte est que, durant chaque tour pendant la nuit, vous avez le droit de connaître la carte du joueur de votre choix..."
-    
-    def capacite_voyante(self):
+        self.nom="Voyante"
+        self.description="La capacité de votre carte est que, durant chaque tour pendant la nuit, vous avez le droit de connaître la carte du joueur de votre choix..."
+
+    def capacite_voyante(self, liste_joueurs):
             
-            print("Voici la liste des joueurs : ")
-            for i in range(len(self.liste_joueurs)):
-                print(f"{i + 1} - {self.liste_joueurs[i].nom}")
+        print("Voici la liste des joueurs : ")
+        for i in range(len(liste_joueurs)):
+            print(f"{i + 1} - {liste_joueurs[i].nom}")
 
-            n = int(input("Quelle est le numéro du joueur que vous souhaitez voir ?"))
+        n = int(input("Quelle est le numéro du joueur que vous souhaitez voir ?"))
 
-            carte_de_la_cible = self.liste_joueurs[n-1].carteatt.nom
-            print(f"La carte de {self.liste_joueurs[n-1].nom} est : {carte_de_la_cible}")
+        carte_de_la_cible = liste_joueurs[n-1].carteatt.nom
+        print(f"La carte de {liste_joueurs[n-1].nom} est : {carte_de_la_cible}")
 
 class PetiteFille(Carte):
     def __init__(self):
-            self.nom="Petite-Fille", 
+            self.nom="Petite-Fille" 
             self.description="La capacité de votre carte est que, lors du tour des loups garous uniquement, vous pouvez tricher en les observant discrètement en ouvrant vos yeux. Faites attention à ne pas être repéré, car vous risqueriez de..."
 
 class Cupidon(Carte):
     def __init__(self):
-            self.nom="Cupidon", 
+            self.nom="Cupidon" 
             self.description="La capacité de votre carte est que vous pouvez mettre en couple deux personnes dans la partie. Un seul couple peut-être en vie à la fois. Si un des deux partenaires meurt, l'autre mourra aussi-tôt dans la tristesse..."
 
     def capacite_cupidon(self):
@@ -91,10 +110,10 @@ class Cupidon(Carte):
 
 class Villageois(Carte):
     def __init__(self):
-            self.nom="Villageois", 
-            self.description="Votre carte n'a malheureusement pas de capacité spéciale durant la nuit, vous devrez donc être le plus à l'affût possible durant le vote !!!"
+        self.nom="Villageois" 
+        self.description="Votre carte n'a malheureusement pas de capacité spéciale durant la nuit, vous devrez donc être le plus à l'affût possible durant le vote !!!"
 
 class Voleur(Carte):
     def __init__(self):
-            self.nom="Voleur", 
+            self.nom="Voleur"
             self.description="La capacité de votre carte est que, durant votre tour, vous pouvez échanger cette carte avec la carte d'un autre joueur choisi. Ne gâchez pas cette aptitude en faisant le mauvais choix !!!"

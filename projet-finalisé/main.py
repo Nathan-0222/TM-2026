@@ -4,7 +4,7 @@ from partie import *
 
 
 partie = Partie("ciao")
-partie.run()
+Partie.run()
 
 c1 = Sorciere()
 

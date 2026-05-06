@@ -98,6 +98,10 @@ class Partie:
 
     
     def run(self):
+
+        Partie.ajouter_joueur()
+        Partie.distribuer_cartes()
+
         print("\n=== DÉBUT DE LA PARTIE ===")
         premiere_nuit = True 
         
@@ -105,23 +109,21 @@ class Partie:
             # 1. PHASE DE NUIT
             print("\n--- LA NUIT TOMBE ---")
             print("Le village s'endort, tout le monde ferme les yeux.")
-            
-            if premiere_nuit:
-                for j in self.liste_joueurs:
-                    if j.carteatt.nom == "Voleur" and j.envie == True:
-                        print("\nLe Voleur se réveille.")
-                        # On suppose que tu lui passes la liste globale comme vu ensemble
-                        j.carteatt.capacite_voleur(self.liste_joueurs) 
-                        print("Le Voleur se rendort.")
 
             if premiere_nuit:
                 for j in self.liste_joueurs:
                     if j.carteatt.nom == "Cupidon" and j.envie == True:
                         print("\nCupidon se réveille.")
-                        j.carteatt.capacite_cupidon(self.liste_joueurs)
+                        j.carteatt.capacite_cupidon(self.liste_joueurs)      #pas encore fait
                         print("Cupidon se rendort.")
             
             premiere_nuit = False 
+
+            for j in self.liste_joueurs:
+                if j.carteatt.nom == "Voleur" and j.envie == True:
+                    print("\nLe Voleur se réveille.")
+                    j.carteatt.capacite_voleur(self.liste_joueurs)    #pas encore fait
+                    print("Le Voleur se rendort.")
 
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Voyante" and j.envie == True:

@@ -97,7 +97,7 @@ class Partie:
 
 
     
-def run(self):
+    def run(self):
         print("\n=== DÉBUT DE LA PARTIE ===")
         premiere_nuit = True 
         

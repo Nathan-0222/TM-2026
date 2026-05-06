@@ -86,6 +86,9 @@ class Cupidon(Carte):
             self.nom="Cupidon", 
             self.description="La capacité de votre carte est que vous pouvez mettre en couple deux personnes dans la partie. Un seul couple peut-être en vie à la fois. Si un des deux partenaires meurt, l'autre mourra aussi-tôt dans la tristesse..."
 
+    def capacite_cupidon(self):
+         pass
+
 class Villageois(Carte):
     def __init__(self):
             self.nom="Villageois", 

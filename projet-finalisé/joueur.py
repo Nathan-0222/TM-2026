@@ -10,11 +10,16 @@ class Joueur:
     def mourir(self):
         self.envie = False
         print("Le joueur", self.nom, "est mort cette nuit ...")
+
+        if self.amoureux != None:
+            if self.amoureux.envie == True:
+                self.amoureix.mourir()
+                print("Malheursement, son partenaire étant", self.amoureux.nom, "meurt de chagrin suite à son décès")
     
     def ressuciter(self):
         self.envie = True
         print("Le joueur", self.nom, "a été ressucité cette nuit !!!")
     
-    def voter(self, cible):
+    def voter(self):
         vote = int(input(f"{self.nom}, qui votez-vous (insérer nombre) ? "))
         return vote

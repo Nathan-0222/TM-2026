@@ -142,6 +142,7 @@ class Partie:
         
         index_max = liste_votes.index(max(liste_votes))
         victime = self.liste_joueurs[index_max]
+        victime.mourir()
         return victime
         
     
@@ -196,7 +197,6 @@ class Partie:
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Sorciere" and j.envie == True:
                     print("\nLa Sorcière se réveille.")
-                    # Comment gérer le passement de la victime des loups à la sorcière ??????????????
                     j.carteatt.capacite_sorciere(victime, self.liste_joueurs) 
                     print("La Sorcière se rendort.")
 
@@ -204,7 +204,16 @@ class Partie:
 
             print("\n--- LE SOLEIL SE LÈVE ---")
             print("Le village se réveille.")
+
             # Regarder si Victime est morte ou pas au final et l'annoncer !!!!!!!
+
+            if victime.envie == False:
+                print("Malheureusement,", victime.nom, "nous a quitté cette nuit..")
+
+            else:
+                print("Personne n'est mort cette nuit !!!")
+
+                                                           #Comment annoncer la victime qui a pu être tué par la sorcière si potion de mort utiliser ????????????????????????????????????????????????????????????
             
             # VÉRIFICATION DE VICTOIRE
             

@@ -30,9 +30,10 @@ class Sorciere(Carte):
 
     def capacite_sorciere(self, victime, liste_joueurs):
         print(f"Le joueur {victime.nom} a été choisi par les loups.")
-        x = int(input("Que voulez vous utiliser, choisissez 1 pour potion de vie, 2 pour potion de mort et 3 pour ne rien faire :"))
+        x = int(input("Que voulez vous utiliser, choisissez 1 pour la potion de vie en le ressucitant, 2 pour la potion de mort afin d'éliminer quelqu'un et 3 pour ne rien faire :"))
         if x == 1:
             self.utiliser_potion_vie()
+            victime.ressuciter()
         elif x == 2:
 
             print("Voici la liste des joueurs : ")
@@ -40,7 +41,8 @@ class Sorciere(Carte):
                 print(f"{i + 1} - {liste_joueurs[i].nom}")
             
             victime2 = int(input("Quel est le numéro de la personne que vous voulez tuer ?"))
-            liste_joueurs[victime2-1].mourir()   
+            liste_joueurs[victime2-1].mourir()
+
         else:
             victime.mourir()
 
@@ -52,6 +54,9 @@ class LoupGarou(Carte):
         print(self.nom) 
         self.description="La capacité de votre carte est que, avec vos coéquipiers durant la nuit, vous pouvez en vous mettant d'accord tuer un joueur. Votre but est que vous soyez les derniers survivants !!!"
     
+    def capacite_loupgarou(self):
+        pass
+
 
 
 class Chasseur(Carte):
@@ -105,9 +110,23 @@ class Cupidon(Carte):
             self.nom="Cupidon" 
             self.description="La capacité de votre carte est que vous pouvez mettre en couple deux personnes dans la partie. Un seul couple peut-être en vie à la fois. Si un des deux partenaires meurt, l'autre mourra aussi-tôt dans la tristesse..."
 
-    def capacite_cupidon(self):
-         pass
+    def capacite_cupidon(self, liste_joueurs):
 
+        print("Voici la liste des joueurs : ")
+        for i in range(len(liste_joueurs)):
+                print(f"{i + 1} - {liste_joueurs[i].nom}")
+
+        j1 = int(input("Quel est le numéro du premier joueur voudriez vous mettre en couple ? :"))
+        j2 = int(input("Quel est le numéro du deuxième joueur voudriez vous mettre en couple ? :"))
+
+        joueur1 = liste_joueurs[j1 - 1]
+        joueur2 = liste_joueurs[j2 - 1]
+
+        joueur1.amoureux = joueur2
+        joueur2.amoureux = joueur1
+
+        print("Cupidon a bien tiré sa flèche et a mis au monde un tout nouveau couple !!")
+      
 class Villageois(Carte):
     def __init__(self):
         self.nom="Villageois" 
@@ -117,3 +136,33 @@ class Voleur(Carte):
     def __init__(self):
             self.nom="Voleur"
             self.description="La capacité de votre carte est que, durant votre tour, vous pouvez échanger cette carte avec la carte d'un autre joueur choisi. Ne gâchez pas cette aptitude en faisant le mauvais choix !!!"
+
+    def capacite_voleur(self, liste_joueurs):
+
+        voleur_joueur = None
+        for j in range(liste_joueurs):
+            if j.carteatt.nom == "Voleur":
+                voleur_joueur = j
+
+        a = input("Voulez vous dérobez la carte de quelqu'un cette nuit ? (oui/non) :")
+        
+        if a == "oui" or "Oui" or "OUI":
+
+            print("Voici la liste des joueurs : ")
+            for i in range(len(liste_joueurs)):
+                print(f"{i + 1} - {liste_joueurs[i].nom}")
+
+            n = int(input("Quel est le numéro du joueur que vous souhaitez cambrioler cette nuit ? :"))
+
+            cible = liste_joueurs[n-1]
+
+            carte_temporaire = voleur_joueur.carteatt
+            voleur_joueur.carteatt = cible.carteatt
+            cible.carteatt = carte_temporaire
+
+            print("Le voleur a bien dérobé la maison de quelqu'un parmi nous cette nuit.. N'oubliez pas de fairre attention !!")
+
+        else:
+
+            print("Le voleur a décidé de rester tranquillement chez lui cette nuit")
+

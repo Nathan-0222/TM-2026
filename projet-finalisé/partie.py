@@ -92,11 +92,12 @@ class Partie:
         liste_votes = [0] * len(self.liste_joueurs)
 
         for joueur in self.liste_joueurs:
-            vote = joueur.voter() - 1
-            liste_votes[vote] += 1
+            if joueur.envie == True:
+                vote = joueur.voter() - 1
+                liste_votes[vote] += 1
         
         index_max = liste_votes.index(max(liste_votes))
-        print("Le joueur", self.liste_joueurs[index_max].nom,"est mort cette nuit")
+        print("Le joueur", self.liste_joueurs[index_max].nom,"est mort par vote. Sa carte était :", self.liste_joueurs[index_max].carteatt.nom)
         self.liste_joueurs[index_max].mourir()
 
     def vérification_victoire(self):
@@ -125,7 +126,7 @@ class Partie:
             if self.liste_joueurs[i].envie:
                 print(f"{i + 1} - {self.liste_joueurs[i].nom}")
             else:
-                print(f"{i + 1} - décédé")
+                print(f"(Décédé) - {self.liste_joueurs[i].nom}")
 
         
     def vote_de_nuit(self):
@@ -135,7 +136,6 @@ class Partie:
         liste_votes = [0] * len(self.liste_joueurs)
 
         for j in self.liste_joueurs:
-            print(j.carteatt.nom)
             if j.carteatt.nom == "Loup-Garou" and j.envie == True:
                 vote = j.voter() - 1
                 liste_votes[vote] += 1
@@ -166,6 +166,7 @@ class Partie:
                 for j in self.liste_joueurs:
                     if j.carteatt.nom == "Cupidon" and j.envie == True:
                         print("\nCupidon se réveille.")
+                        self.affiche_joueurs()
                         j.carteatt.capacite_cupidon(self.liste_joueurs)      #pas encore fait
                         print("Cupidon se rendort.")
             
@@ -174,12 +175,14 @@ class Partie:
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Voleur" and j.envie == True:
                     print("\nLe Voleur se réveille.")
+                    self.affiche_joueurs()
                     j.carteatt.capacite_voleur(self.liste_joueurs)    #pas encore fait
                     print("Le Voleur se rendort.")
 
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Voyante" and j.envie == True:
                     print("\nLa Voyante se réveille.")
+                    self.affiche_joueurs()
                     j.carteatt.capacite_voyante(self.liste_joueurs) 
                     print("La Voyante se rendort.")
 
@@ -195,8 +198,9 @@ class Partie:
             print("Les Loups-Garous se rendorment.")
 
             for j in self.liste_joueurs:
-                if j.carteatt.nom == "Sorciere" and j.envie == True:
+                if j.carteatt.nom == "Sorciere" and (j.envie == True or j == victime):
                     print("\nLa Sorcière se réveille.")
+                    self.affiche_joueurs()
                     j.carteatt.capacite_sorciere(victime, self.liste_joueurs) 
                     print("La Sorcière se rendort.")
 
@@ -213,7 +217,6 @@ class Partie:
             else:
                 print("Personne n'est mort cette nuit !!!")
 
-                                                           #Comment annoncer la victime qui a pu être tué par la sorcière si potion de mort utiliser ????????????????????????????????????????????????????????????
             
             # VÉRIFICATION DE VICTOIRE
             

@@ -13,7 +13,7 @@ class Joueur:
 
         if self.amoureux != None:
             if self.amoureux.envie == True:
-                self.amoureix.mourir()
+                self.amoureux.mourir()
                 print("Malheursement, son partenaire étant", self.amoureux.nom, "meurt de chagrin suite à son décès")
     
     def ressuciter(self):

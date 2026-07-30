@@ -142,7 +142,7 @@ class Partie:
         
         index_max = liste_votes.index(max(liste_votes))
         victime = self.liste_joueurs[index_max]
-        victime.mourir()
+
         return victime
         
     
@@ -167,7 +167,7 @@ class Partie:
                     if j.carteatt.nom == "Cupidon" and j.envie == True:
                         print("\nCupidon se réveille.")
                         self.affiche_joueurs()
-                        j.carteatt.capacite_cupidon(self.liste_joueurs)      #pas encore fait
+                        j.carteatt.capacite_cupidon(self.liste_joueurs)      
                         print("Cupidon se rendort.")
             
             premiere_nuit = False 
@@ -176,7 +176,7 @@ class Partie:
                 if j.carteatt.nom == "Voleur" and j.envie == True:
                     print("\nLe Voleur se réveille.")
                     self.affiche_joueurs()
-                    j.carteatt.capacite_voleur(self.liste_joueurs)    #pas encore fait
+                    j.carteatt.capacite_voleur(self.liste_joueurs)    
                     print("Le Voleur se rendort.")
 
             for j in self.liste_joueurs:
@@ -193,15 +193,16 @@ class Partie:
                     print("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
 
             victime = self.vote_de_nuit()
-
-
             print("Les Loups-Garous se rendorment.")
+
+            sauve_par_sorciere = False
+            victime_sorciere = None
 
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Sorciere" and (j.envie == True or j == victime):
                     print("\nLa Sorcière se réveille.")
                     self.affiche_joueurs()
-                    j.carteatt.capacite_sorciere(victime, self.liste_joueurs) 
+                    sauve_par_sorciere, victime_sorciere = j.carteatt.capacite_sorciere(victime, self.liste_joueurs) 
                     print("La Sorcière se rendort.")
 
             # 2. PHASE DE JOUR (RÉVEIL)
@@ -209,15 +210,31 @@ class Partie:
             print("\n--- LE SOLEIL SE LÈVE ---")
             print("Le village se réveille.")
 
-            # Regarder si Victime est morte ou pas au final et l'annoncer !!!!!!!
+            # Liste des morts à annoncer ce matin
 
-            if victime.envie == False:
-                print("Malheureusement,", victime.nom, "nous a quitté cette nuit..")
+            morts_cette_nuit = []
 
-            else:
+            # Si la victime des loups n'a pas été sauvée
+
+            if sauve_par_sorciere == False and victime:
+                morts_cette_nuit.append(victime)
+
+            # Si la sorcière a utilisé la potion de mort
+
+            if victime_sorciere != None:
+                morts_cette_nuit.append(victime_sorciere)
+
+            # Annonce globale
+
+            if len(morts_cette_nuit) == 0:
                 print("Personne n'est mort cette nuit !!!")
 
-            
+            else:
+                for j in morts_cette_nuit:
+                    if j.envie: 
+                        j.mourir()
+                        print(f"Le joueur {j.nom} nous a quitté cette nuit, sa carte était : {j.carteatt.nom}")
+
             # VÉRIFICATION DE VICTOIRE
             
             if self.vérification_victoire():

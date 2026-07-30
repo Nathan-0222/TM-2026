@@ -9,7 +9,6 @@ class Joueur:
     
     def mourir(self):
         self.envie = False
-        print("Le joueur", self.nom, "est mort cette nuit ...")
 
         if self.amoureux != None:
             if self.amoureux.envie == True:

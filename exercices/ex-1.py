@@ -2,7 +2,7 @@ class Eleve:
     
     def __init__ (self, nom, classe, note):
         self.nom = nom
-        self.classe = age
+        self.classe = classe
         self.note = note
 
     def compare(eleve1, eleve2):

@@ -29,16 +29,39 @@ class Sorciere(Carte):
             print("Pas de potion disponible")
 
     def capacite_sorciere(self, victime, liste_joueurs):
+
         print(f"Le joueur {victime.nom} a été choisi par les loups.")
         print("Il vous reste :", self.potion_vie, "potion de vie et", self.potion_mort, "potion de mort")
         x = int(input("Que voulez vous utiliser, choisissez 1 pour la potion de vie en le ressucitant, 2 pour la potion de mort afin d'éliminer quelqu'un et 3 pour ne rien faire :"))
-        if x == 1 and self.potion_vie ==1:
-            self.utiliser_potion_vie()
-            victime.ressuciter()
-        elif x == 2 and self.potion_mort ==1:
-            self.utiliser_potion_mort()
-            victime2 = int(input("Quel est le numéro de la personne que vous voulez tuer ?"))
-            liste_joueurs[victime2-1].mourir()
+
+        sauve_par_sorciere = False
+        victime_sorciere = None
+
+        if x == 1:
+
+            if self.potion_vie == 1:
+
+                self.utiliser_potion_vie()
+                sauve_par_sorciere = True
+                print(f"Vous avez choisi de sauver {victime.nom}.")
+
+            else:
+
+                print("Pas de potion de vie disponible.")
+
+        elif x == 2:
+
+            if self.potion_mort == 1:
+
+                self.utiliser_potion_mort()
+                n = int(input("Quel est le numéro de la personne que vous voulez tuer ? "))
+                victime_sorciere = liste_joueurs[n - 1]
+
+            else:
+
+                print("Pas de potion de mort disponible.")
+
+        return sauve_par_sorciere, victime_sorciere
        
         
 class LoupGarou(Carte):

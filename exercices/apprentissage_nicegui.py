@@ -161,5 +161,34 @@ coordinates = ui.label('0, 0')
 
 image = ui.image('').classes('w-32')
 
+##
+#Input elements
+##
+
+file_input = ui.input(label = 'File Name', placeholder = 'Enter a file name', password = False)   #si j'aurais mis en plus "password = True" on verrait pas les caractères
+
+button = ui.button('Show Image', on_click = lambda : update())
+
+def update():
+    image.set_source(str(file_input.value))
+
+image = ui.image('').classes('w-32')
+
+##
+#Text Area = zone de texte libre
+##
+
+name_input = ui.input (label = 'Name', placeholder='Enter the name of the sender')
+
+text_area = ui.textarea(label = 'Message', placeholder = 'Write your message')
+
+ui.button('Send Message', on_click = lambda : send())
+
+def send():
+    ui.chat_message(f'{text_area.value}', name = f'{name_input.value}', avatar = 'https://robohash.org/ui')
+    name_input.value = ''
+    text_area.value = ''
+
+
 
 ui.run()   #lancer programme

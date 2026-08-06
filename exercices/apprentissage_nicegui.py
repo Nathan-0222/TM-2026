@@ -189,6 +189,93 @@ def send():
     name_input.value = ''
     text_area.value = ''
 
+##
+#Number Input : Insertion de deux nombres, selon bouton cliqué renvoie opération différente (+, -, ...)
+##
+
+first_number = ui.number(label='First Number', placeholder='Enter the first number')
+second_number = ui.number(label='Second Number', placeholder='Enter the second number')
+
+add_button = ui.button('+', on_click=lambda:calculate(add_button.text))
+sub_button = ui.button('-', on_click=lambda:calculate(sub_button.text))
+mul_button = ui.button('*', on_click=lambda:calculate(mul_button.text))
+div_button = ui.button('/', on_click=lambda:calculate(div_button.text))
+
+result = ui.label('Result')
+
+def calculate(e):
+
+    if e=='+':
+        result.set_text(f'Result : {first_number.value+second_number.value}')
+    if e=='-':
+            result.set_text(f'Result : {first_number.value-second_number.value}')
+    if e=='*':
+            result.set_text(f'Result : {first_number.value*second_number.value}')
+    if e=='/':
+            result.set_text(f'Result : {first_number.value/second_number.value}')
+
+##
+#Knob Element : Roue comme les heures avec selon "l'heure" cela affiche une image
+##
+
+knob = ui.knob('0', min=0, max=100, color = 'red', show_value=True, on_change=lambda:update(knob.value))
+
+def update(e):
+    if e > 0 and e < 50:
+        label.set_text('Football')
+        image.set_source('football.jpg')
+    if e > 50:
+        label.set_text('Basketball')
+        image.set_source('basketball.jpg')
+    label1.set_text(f'{e}')
+
+
+label = ui.label('/')
+label1 = ui.label('')
+image = ui.image ('').classes('w-32')
+
+ ##
+ #Color elements : Chnager grâce à un input directement ou grâce à une palette de couleur la couleur d'un élément (ici un label)
+ ##
+
+label = ui.label('Hello Nathan')
+
+color_input = ui.color_input(label='Color', value='#000000', on_change=lambda:update())
+
+def update():
+    label.style(f'color:{color_input.value}')
+
+button = ui.button(icon='colorize', on_click=lambda:picker())
+
+def picker():
+    ui.color_picker(on_pick=lambda e:button.style(f'background-color : {e.color}!important'))
+
+##
+#Date Input Element : Calendrier, quand selectionné met par exemple cb de jours avant cette date
+
+import datetime   #important
+first_date = ui.date(value='2000-01-01', on_change=lambda:calculate())
+
+def calculate():
+    first_date_value = first_date.value
+    current_date = str(datetime.datetime.now())
+
+    t1 = datetime.datetime(year=int(first_date_value[0:4]),
+                           month=int(first_date_value[5:7]),
+                           day=int(first_date_value[8:10]))
+
+    t2 = datetime.datetime(year=int(current_date[0:4]),
+                               month=int(current_date[5:7]),
+                               day=int(current_date[8:10]))
+    label.set_text(str(t2-t1)[:-9])
+
+##
+#Time element :
+##
+
+
+label = ui.label('')
+
 
 
 ui.run()   #lancer programme

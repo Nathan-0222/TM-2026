@@ -394,6 +394,33 @@ chart = ui.highchart({
 }).classes('w-100')
 
 
+##
+#Linear Progress Element : S'il y à par exemple 4 Input à remplir, la barre sera à 0% et augmentera de 25% par input rempli (progression de chose à remplir sous forme de barre)
+##
+
+name = ui.input('Name', on_change = lambda:update())
+surname = ui.input('Surname', on_change = lambda:update())
+gender = ui.radio(['Male','Female'], on_change = lambda:update())   #Choix entre les deux
+country = ui.select(['Germany','England','France','Switzerland'], on_change = lambda:update())
+
+button = ui.button('Save', icon='save', color = 'green', on_click=lambda:save())
+
+slider = ui.slider(min=0,max=100,step=25, value=0)
+
+linear_progress = ui.linear_progress().bind_value_from(slider,'value')
+
+def update():
+    if name.value != '' and slider.value < 25:
+        slider.value = slider.value + 25
+    if surname.value != '' and slider.value <= 25:
+            slider.value = slider.value + 25
+    if gender.value != None and slider.value <= 50:
+            slider.value = slider.value + 25
+    if country.value != None and slider.value <= 75:
+            slider.value = slider.value + 25
+
+def save():
+     ui.label(f'{name.value} {surname.value} {gender.value} {country.value}')
 
 
 

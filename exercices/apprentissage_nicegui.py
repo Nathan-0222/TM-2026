@@ -330,5 +330,71 @@ with ui.row():   #Pour les aligner
     #ui.button = ('Jump to 0:45', on_click = lambda : audio.seek(45))
 
 
+##
+#Vidéo Element
+##
+
+#label = ui.label('Video Tutorial')
+
+#video = ui.video('drone.mp4').classes('w-50')
+
+#with ui.row():
+    #ui.button = ('Play', color ='blue', icon='play_circle', on_click=video.play)
+    #ui.button = ('Pause', color = 'red', icon ='pause_circle', on_click=video.pause)
+    #ui.button = ('Jump to 0:05', on_click = lambda : video.seek(5))
+
+
+##
+#Table Element : Input puis résultat stockés dans un tableau
+#
+
+name = ui.input('Name', placeholder='Enter your name')
+age = ui.input('Age', placeholder='Enter your age')
+
+save = ui.button('Save', on_click=lambda:save())
+
+def save():
+    new_dict = {'name':f'{name.value}','age':f'{age.value}'}
+    rows.append(new_dict)
+    table.update()
+    name.value=''
+    age.value=''
+
+columns = [{
+    'label':'Name', 'field':'name'},
+    {'label':'Age', 'field':'age'}]
+
+rows = []
+
+table = ui.table(columns=columns, rows=rows)
+
+
+##
+#Highchart Element : Stockage des valeurs d'un input dans un Graphique (pas dans un tableau)
+##
+
+
+company = ui.input('Company Name', placeholder='Enter the name of your Company')
+stocks = ui.input('Stocks', placeholder='Enter your stocks')
+
+save = ui.button('Save', on_click=lambda:save_button())
+
+list_company = []
+
+def save_button():
+    new_dict = {'name':f'{company.value}','data':[int(stocks.value)]}
+    list_company.append(new_dict)
+    chart.update()
+
+chart = ui.highchart({
+    'title': False,                
+    'chart': {'type': 'bar'},      
+    'xAxis': {'categories': ['Companies']},
+    'series': list_company
+}).classes('w-100')
+
+
+
+
 
 ui.run()   #lancer programme

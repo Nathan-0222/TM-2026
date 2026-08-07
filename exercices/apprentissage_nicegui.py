@@ -218,9 +218,9 @@ def calculate(e):
 #Knob Element : Roue comme les heures avec selon "l'heure" cela affiche une image
 ##
 
-knob = ui.knob('0', min=0, max=100, color = 'red', show_value=True, on_change=lambda:update(knob.value))
+knob = ui.knob('0', min=0, max=100, color = 'red', show_value=True, on_change=lambda e: reset(e.value))
 
-def update(e):
+def reset(e):
     if e > 0 and e < 50:
         label.set_text('Football')
         image.set_source('football.jpg')
@@ -269,12 +269,65 @@ def calculate():
                                day=int(current_date[8:10]))
     label.set_text(str(t2-t1)[:-9])
 
-##
-#Time element :
-##
-
-
 label = ui.label('')
+
+##
+#Time element : la date et le temps (en input interractif) seront connectés et indiqués via un label
+##
+
+clock = ui.time(value='', on_change=lambda:update())
+
+date = ui.date(value='', on_change=lambda:update())
+
+label = ui.label('Time')
+
+def update():
+    label.set_text(f'Time : {str(clock.value)} {str(date.value)}')
+
+##
+#File upload : Téléchargement d'un fichier sur la page web
+#
+
+from nicegui import ui, events
+
+def uploads(e: events.UploadEventArguments):
+    text = e.content.read().decode("utf-8")
+    label.set_text(text)
+
+ui.upload(
+    on_upload=lambda e: uploads(e), 
+    on_rejected=lambda e: ui.notify('Only text files !!')
+).props('accept=.txt').classes('max-w-full')
+
+label = ui.label('Voici le texte de votre fichier')
+
+##
+#Image Elements : quand cliqué, redirigé par un lien
+##
+
+with ui.row():   #Pour les aligner
+
+    with ui.link(target ='https://www.youtube.com/watch?v=srEtZH79atw&list=PLMi6KgK4_mk1xZc45zEBxlByLhpbJK2Uy&index=19'):
+        with ui.image('football.jpg').classes('w-40'):
+            ui.label('Football !!').classes('absolute-bottom text-subtitle2 text-center')
+
+    with ui.link(target ='https://www.youtube.com/watch?v=srEtZH79atw&list=PLMi6KgK4_mk1xZc45zEBxlByLhpbJK2Uy&index=19'):
+        with ui.image('basketball.jpg').classes('w-40'):
+            ui.label('Basketball !!').classes('absolute-bottom text-subtitle2 text-center')
+
+##
+#Audio Element
+##
+
+#label = ui.label('Audio Tutorial')
+
+#audio = ui.audio('music.mp3)
+
+#with ui.row():
+
+    #ui.button = ('Play', color ='blue', on_click=audio.play)
+    #ui.button = ('Pause', color = 'red', on_click=audio.pause)
+    #ui.button = ('Jump to 0:45', on_click = lambda : audio.seek(45))
 
 
 

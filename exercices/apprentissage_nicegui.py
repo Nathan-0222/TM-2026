@@ -424,4 +424,109 @@ def save():
 
 
 
+##
+# Circular Progress Element : Avancée de la progression comme avant, mais ous forme de rond circulaire (pas ligne). Deux version
+##
+
+##Première version : Barre linéaire (step = 25), tous les 25 change d'image, progression circulaire l'illustre avec valeur au centre
+slider = ui.slider(min=0,max=100,step=25,value=0, on_change=lambda:set_image())
+
+circular = ui.circular_progress().bind_value_from(slider,'value')
+
+def set_image():
+    if slider.value <= 25:
+            image.set_source('football.jpg')
+    if slider.value <= 50 and slider.value > 25:
+            image.set_source('messi.jpg')
+    if slider.value <= 75 and slider.value > 50:
+            image.set_source('ronaldo.jpg')
+    if slider.value <= 100 and slider.value > 75:
+            image.set_source('basketball.jpg')
+
+image = ui.image('').classes('w-32')
+
+##Deuxième Version : Chaque fois que bouton pressé, image change
+with ui.circular_progress(min=0, max=100, value=0, show_value=False) as progress:
+     ui.button(
+          icon='star',
+          on_click=lambda:set_image()
+     ).props('flat round')
+
+def set_image():
+    progress.set_value(progress.value + 25)
+    if progress.value <= 25:
+            image.set_source('football.jpg')
+    if progress.value <= 50 and progress.value > 25:
+            image.set_source('messi.jpg')
+    if progress.value <= 75 and progress.value > 50:
+            image.set_source('ronaldo.jpg')
+    if progress.value <= 100 and progress.value > 75:
+            image.set_source('basketball.jpg')
+
+image = ui.image('').classes('w-32')
+
+
+##
+#Leaflet element : Carte région/pays/..., bouton servant à zoomer, etc..
+##
+
+map = ui.leaflet(center=(48.864, 2.349))   #Donne le centre de notre carte (eniron zone d'action au début) en donnant la lattitude et longitude
+
+ui.label().bind_text_from(map, 'center', lambda center:f'Center : {center[0]:.3f}, {center[1]:.3f}')
+
+ui.label().bind_text_from(map, 'zoom', lambda zoom:f'Zoom : {zoom}')
+
+with ui.row():
+    ui.button('New-York', color='red', on_click=lambda:map.set_center((40.730, -73.935)))
+    ui.button('London', color='green', on_click=lambda:map.set_center((51.509, -0.118)))
+
+with ui.row():
+    ui.button(icon='zoom_in', on_click=lambda:map.set_zoom(map.zoom + 1))
+    ui.button(icon='zoom_out', on_click=lambda:map.set_zoom(map.zoom - 1))
+
+
+##
+#Tree Element : Arbre affichant les différents groupe d'input (Sujet puis description), dès que save enregistré et lors d'un nouveau save le nouveau groupe sera enregistré en dessous
+##
+
+topic = ui.input('Topic')
+text = ui.textarea(label = 'Description')
+
+save = ui.button('Save', color = 'green', icon = 'save', on_click = lambda:save())
+
+dict_list=[]
+
+def save():
+    new_dict = {'id' : f'{topic.value}', 'description':f'{text.value}'}
+    dict_list.append(new_dict)
+
+tree = ui.tree('id' : 'topic', 'text', 'children':dict_list)
+
+tree.add_slot('default-header', '''
+    <span:props='props>Node<strong>{{props.node.id}}</strong></span>    
+''')   #Html code
+
+tree.add_slot('default-body', '''
+    <span:props='props>Text: '{{props.node.text}}'</span> 
+''')   #Html code
+
+
+##
+# Log record view : Lorsque deux input rempli et 'save' grâce au bouton,  affiche les résultats qu'on a mis dans une sorte de "terminal" avec l'heure aussi
+##
+
+from datetime import datetime
+
+name = ui.input('Name')
+surname = ui.input('Surname')
+
+save = ui.button('Save', color = 'green', icon = 'save', on_click = lambda:save())
+log = ui.log (max_lines=10).classes('w-full h-20')   #Sorte de 'Terminal' mentionné
+
+def save ():
+     log.push(f'You enterred -> Name : {name.value}, Surname : {surname.value}\{datetime.now().strftime('%X.%f')[:-5]}')
+
+
+
+
 ui.run()   #lancer programme

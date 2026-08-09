@@ -500,7 +500,7 @@ def save():
     new_dict = {'id' : f'{topic.value}', 'description':f'{text.value}'}
     dict_list.append(new_dict)
 
-tree = ui.tree('id' : 'topic', 'text', 'children':dict_list)
+tree = ui.tree([{'id': 'topic', 'text': 'Valeur_du_texte', 'children': dict_list}])
 
 tree.add_slot('default-header', '''
     <span:props='props>Node<strong>{{props.node.id}}</strong></span>    
@@ -526,6 +526,54 @@ log = ui.log (max_lines=10).classes('w-full h-20')   #Sorte de 'Terminal' mentio
 def save ():
      log.push(f'You enterred -> Name : {name.value}, Surname : {surname.value}\{datetime.now().strftime('%X.%f')[:-5]}')
 
+
+##
+#Editor Element : Zone de texte, dans laquelle on peut modifier le texte séléctionné avec des boutons (mettre en italique, mettre en gras,...)
+##
+
+editor = ui.editor(placeholder='Type something', on_change=lambda:write())
+
+def write():
+    text.set_text(f'HTML code : {editor.value}')
+
+text = ui.label('')
+
+
+##
+#Code Element : Zone de texte dans laquelle on écrit en code ce qu'on veut, puis cela nous renvoie le code bien structuré
+##
+
+text_area = ui.textarea('Text', placeholder='Type your cods here !!')
+
+button = ui.button('Save', color ='green', icon='save', on_click=lambda:save())
+
+def save():
+    ui.code(text_area.value)
+
+
+##
+#JSON Editor : Deux Input, quand sauvegarder renvoie un element json avec les valeurs saisies(si deuxième nom mis après, crée un nouveau)
+##
+
+name = ui.input('Name')
+surname = ui.input('Surname')
+
+save_button = ui.button('Save', icon = 'save', color='green')
+
+def save():
+     json = {'name' : name.value, 'surname' : surname.value}
+
+     ui.json_editor({'content' : {'json':json}})
+
+
+##
+# Bind Text From : Exemple d'utilisation de la fonction 'bind text from', avec deux input puis un choix entre les deux nombres, pour que avec deux boutons on puisse augmenter ou diminuer la valeur du nombre choisi
+##
+
+data = {'number_1':20, 'number_2':25}
+
+ui.label().bind_text_from(data, 'number_1', backward=lambda a:f'First Number : {a}')
+ui.label().bind_text_from(data, 'number_2', backward=lambda a:f'Second Number : {a}')
 
 
 

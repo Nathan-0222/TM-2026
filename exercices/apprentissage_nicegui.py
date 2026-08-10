@@ -717,6 +717,96 @@ with ui.tab_panels(tabs, value = login).classes('w-96'):
                button = ui.button('Sign up',)
 
 
+##
+#Stepper Element : Séries de tâches à remplir en complétant un input par exemple, lorsque remplit passe au suivant (on voit pas le contenu des autre 'tâches' lorsqu'on complète les input d'une par exemple) + boutons d'actions
+##
+
+with ui.stepper().props('vertical').classes('w-full') as stepper:
+     with ui.step('Enter your name'):
+          name = ui.input('Name')
+          with ui.stepper_navigation():
+               ui.button('Next', on_click = stepper.next)
+     with ui.step('Enter your age'):
+          age = ui.input('Age')
+          with ui.stepper_navigation():
+                         ui.button('Next', on_click = stepper.next)
+                         ui.button('Back', on_click = stepper.previous).props('flat')
+     with ui.step('Enter your Country'):
+               country = ui.input('Country')
+               with ui.stepper_navigation():
+                              ui.button('Done', on_click = lambda:ui.notify('Completed!', type = 'positive'))
+                              ui.button('Show input', on_click = lambda:show())
+                              ui.button('Back', on_click = stepper.previous).props('flat')
+def show():
+     ui.label(f'Name:{name.value} - Age:{age.value} - Country:{country.value}')
+
+
+##
+#Timeline Element : éléments comme image référés à une certaine date placés dans l'ordre chronologique de leur arrivée (1ère guerre mondiale, 2ème, ...)
+##
+
+with ui.timeline(side = 'right'):
+
+     ui.image('messi.jpg').classes('w-32')
+     ui.timeline_entry('Messi', title = 'First', subtitle = 'July 24, 2019')
+
+     ui.image('ronaldo.jpg').classes('w-32')
+     ui.timeline_entry('Ronaldo', title = 'Second', subtitle = 'March 28, 2021')
+
+     ui.image('ibrahimovic.jpg').classes('w-32')
+     ui.timeline_entry('Ibrahimovic', title = 'Third', subtitle = 'February 4, 2024')
+
+
+##
+#Carousel Element : Une série d'image, une seule affichée mais flèches à droite et à gauche pour la faire passer à la suivante/précédente
+##
+
+with ui.carousel(arrows = True, navigation = True).props('height = 340px'):
+     
+     with ui.carousel_slide().classes('p-0'):
+         with ui.card().tight():
+            ui.label('Messi')
+            with ui.card_section:
+                ui.image('messi.jpg').classes('w-[280px]')
+
+     with ui.carousel_slide().classes('p-0'):
+         with ui.card().tight():
+            ui.label('Ronaldo')
+            with ui.card_section:
+                ui.image('ronaldo.jpg').classes('w-[280px]')
+
+     with ui.carousel_slide().classes('p-0'):
+         with ui.card().tight():
+            ui.label('Ibrahimovic')
+            with ui.card_section:
+                ui.image('ibrahimovic.jpg').classes('w-[280px]')
+
+
+##
+#Pagination Element : Sortes de pages web. Image et texte par exemple sur page 1. En bas avec des flèches on peut changer la page (1-2-3), et voir donc une autre image et texte
+##
+
+image = ui.image('').classes('w-32')
+a = ui.label('')
+p = ui.pagination(1,3, direction_links=True, on_change=lambda:show())
+
+def show():
+     if p.value == 1:
+          image.set_source('messi.jpg')
+          a.set_text('Messi')
+
+     if p.value == 2:
+              image.set_source('ronaldo.jpg')
+              a.set_text('Ronaldo')
+
+     if p.value == 1:
+              image.set_source('ibrahimovic.jpg')
+              a.set_text('Ibrahimovic')
+     
+
+
+
+
 
 
 

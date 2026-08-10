@@ -575,6 +575,149 @@ data = {'number_1':20, 'number_2':25}
 ui.label().bind_text_from(data, 'number_1', backward=lambda a:f'First Number : {a}')
 ui.label().bind_text_from(data, 'number_2', backward=lambda a:f'Second Number : {a}')
 
+select = ui.select (['first number', 'second number'])
+
+
+with ui.row():
+    ui.button('UP', color = 'green', icon = 'trending_up', on_click=lambda:up())
+    ui.button('DOWN', color = 'red', icon = 'trending_down', on_click=lambda:down())
+
+def up():
+    if select.value == 'first number':
+         date.update(number_1 = data['number_1'] + 1) 
+    if select.value == 'second number':
+             date.update(number_2 = data['number_2'] + 1) 
+
+def down():
+    if select.value == 'second number':
+         date.update(number_2 = data['number_2'] - 1) 
+    if select.value == 'first number':
+             date.update(number_1 = data['number_1'] - 1) 
+
+
+##
+#Card element : Crée deux cartes avec du texte dessus, une image, un lien ou un choix, ...
+##
+with ui.row():
+    with ui.card():
+        ui.label('Messi Card')
+        with ui.card().tight():
+            ui.image('messi.jpg').classes('w-35')
+            with ui.card_section():
+                ui.label('Here is messi')
+                with ui.expansion('Show the video', icon='work').classes('w-full'):
+                     ui.link('Video', 'https://www.youtube.com/watch?v=9Dh-B_kLOpc&list=PLMi6KgK4_mk1xZc45zEBxlByLhpbJK2Uy&index=33')
+
+    with ui.card():
+        ui.label('Ronaldo Card')
+        with ui.card().tight():
+            ui.image('ronaldo.jpg').classes('w-35')
+            with ui.card_section():
+                 ui.label('Here is ronaldo')
+                 with ui.expansion('Show the video', icon='work').classes('w-full'):
+                                      ui.link('Video', 'https://www.youtube.com/watch?v=9Dh-B_kLOpc&list=PLMi6KgK4_mk1xZc45zEBxlByLhpbJK2Uy&index=33')
+
+
+##
+#Grid element : On saisit des valeurs dans des input, puis quand bouton pressé les données s'enregistrent dans un élément nommé le 'grid element' = renvoie données saisies
+##
+
+name = ui.input('Name')
+surname = ui.input('Surname')
+height = ui.input('Height')
+
+save = ui.button('Save', icon = 'save', color = 'green', on_click = lambda:save_func())
+
+with ui.grid(columns=2):
+    name_title = ui.label('Name :')
+    name_value = ui.label('')
+
+    age_title = ui.label('Age :')
+    age_value = ui.label('')
+
+    height_title = ui.label('Name :')
+    height_value = ui.label('')
+
+def save_func():
+     name_value.set_text(name)
+     age_value.set_text(age)
+     height_value.set_text(height)
+
+
+##
+#Expansion Element : Deux input, quand save grâce à bouton, renvoie un 'expansion object', donc une sorte de carte et lorsque tu appuis dessus, un menu défile avec une image et un texte qui peut être un lien,...
+##
+
+expansion_input = ui.input('Name')
+image_file = ui.input('Image file')
+
+save = ui.button('Save', icon = 'save', color = 'green', on_click = lambda:save_funct())
+
+def save_funct():
+     with ui.expansion(f'{expansion_input.value}', icon ='work').calsses('w-full'):
+          ui.image(f'{image_file.value}.jpg').classes('w-40')
+          ui.label(f'Free {image_file.value} Course!!')
+
+
+##
+#Scroll Area Element : Deux cartes avec un expension element, lorsque cliqué sur cet élément on voit une text area avec du texte qu'on peut scroller(barre latérale de défilement)
+##
+
+with ui.row():
+    with ui.card().tight():
+        ui.image('messi.jpg').classes('w-35')
+        with ui.expansion('Messi secret', icon = 'work').classes('w-full'):
+            with ui.scroll_area('w-80 h-64 border'):
+                ui.label('Exemple') 
+
+    with ui.card().tight():
+            ui.image('ronaldo.jpg').classes('w-35')
+            with ui.expansion('Ronaldo secret', icon = 'work').classes('w-full'):
+                with ui.scroll_area('w-80 h-64 border'):
+                    ui.label('Exemple') 
+
+
+##
+#Separator and splitter element : Deux éléments à coté qu'ont peut bouger sur la page en largeur sur une taille définie, élément peut recouvrir l'autre... = Elements aujstables sur la page directement
+##
+
+#Separator Element (barre fin grise servant de séparateur):
+ui.image('messi.jpg').classes('w-32')
+
+ui.separator()
+
+ui.image('ronaldo.jpg').classes('w-32')
+
+#Splitter Element (éléments déplaçable):
+with ui.splitter().classes('w-64') as splitter:
+     with splitter.before:
+          ui.image('ronaldo.jpg').classes('w-12')
+          ui.label('Ronaldo')
+     with splitter.after:
+          ui.image('messi.jpg').classes('w-12')
+          ui.label('Messi')
+
+
+##
+#Tabs Element : Deux colonnes (Login et Sign up), sous ligné lorsque entrain de remplir éléments de la colonne(input). Si je suis sur les éléments de la colonne Login, je ne verrai pas les éléments de la colonne Sign up
+##
+
+with ui.tabs().classes('w-96') as tabs:
+     login = ui.tab('Login')
+     signup = ui.tab('Sign up')
+
+with ui.tab_panels(tabs, value = login).classes('w-96'):
+     with ui.tab_panel(login):
+          username = ui.input('Username')
+          password = ui.input('Password', password = True)
+          button = ui.button('Save', icon = 'login', color = 'green')
+     with ui.tab_panel(signup):
+               username = ui.input('Username')
+               password = ui.input('Password', password = True)
+               button = ui.button('Sign up',)
+
+
+
 
 
 ui.run()   #lancer programme

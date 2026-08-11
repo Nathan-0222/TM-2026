@@ -802,7 +802,105 @@ def show():
      if p.value == 1:
               image.set_source('ibrahimovic.jpg')
               a.set_text('Ibrahimovic')
+
+
+##
+#Menu Element : 3 petites barres en haut à droite de l'écran pour changer de 'page' -> Menu de site web (comme une nav)
+##
+
+with ui,row().classes('w-full items-center'):
+     result = ui.label().classes('mr-auto')
+     with ui.button(icon = 'menu'):
+          with ui.menu() as menu:
+               ui.menu_item('Ronaldo', lambda:show_ronaldo())
+               ui.menu_item('Messi', lambda:show_messi())
+               ui.menu_item('Ibrahimovic', lambda:show_ibra())
+               ui.separator()
+               ui.menu_item('Close', on_click = menu.close)
      
+
+image = ui.image('').classes('w-72')
+text = ui.label('')
+
+def show_ronaldo():
+     image.set_source('ronaldo.jpg')
+     text.set_text('Ronaldo')
+
+def show_messi():
+     image.set_source('messi.jpg')
+     text.set_text('Messi')
+
+def show_ibra():
+     image.set_source('ibrahimovic.jpg')
+     text.set_text('Ibrahimovic')
+
+
+##
+#Tooltip Element : Lorsque curseur sur image par exemple, texte apparaît en bas
+##
+
+with ui.row():
+     
+    with ui.image('messi.jpg').classes('w-16'):
+        ui.tooltip('Messi').classes('w-48')
+
+    with ui.image('ronaldo.jpg').classes('w-16'):
+        ui.tooltip('Ronaldo')
+
+    with ui.image('Ibrahimovic.jpg').classes('w-16'):
+        ui.tooltip('Ibrahimovic')
+
+
+##
+#Notify Element : 3 Input avec bouton, si 3 éléments saisis notif comme quoi c'est tout bon, si une pas mise message d'erreur en disant qu'il faut tout noter, si aucune notée message d'erreur complet
+##
+
+name = ui.input('Name')
+age = ui.input('age')
+Country = ui.input('Country')
+
+ui.button('Save', color = 'green', on_click = lambda:show_notify())
+
+def show_notify():
+
+     value = 0
+     
+     if name.value == '' and country.value == '' and age.value == '':
+        value = 1
+        ui.notify('You entered none of them!', type = 'negative')
+
+     if (name.value == '' or country.value == '' or age.value == '') and value == 0:
+             ui.notify('You did not enter one of theme!', type = 'warning')
+
+     if (name.value != '' and country.value != '' and age.value == '') and value == 0:
+             ui.notify('That is okay!', type = 'positive')
+
+
+##
+#Dialog Element : Deux Input, un bouton 'show' qui renvoit une question à l'utilisateur : il demande s'il veut montrer ses input avec deux coix possible, oui ou non. Si non, rien montré, si oui, résultat des deux input montré
+##
+
+with ui.dialog() as dialog, ui.card:
+     ui.label('Are you Sure ?')
+     with ui.row():
+          ui.button('Yes', on_click = lambda: dialog.submit('Yes'))
+          ui.button('No', on_click = lambda: dialog.submit('No'))
+
+async def show():
+     result = await dialog
+     if result == 'Yes':
+         text.set_text(f'{name.value} {country.value}')
+         name.value = ''
+         country.value = ''
+
+     if result == 'No':
+          text.set_text('')
+
+ui.button('Show', on_click = show)
+
+name = ui.input('Name')
+country = ui.input('Country')
+text = ui.label('Info!')
 
 
 

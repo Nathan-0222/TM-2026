@@ -667,13 +667,13 @@ with ui.row():
     with ui.card().tight():
         ui.image('messi.jpg').classes('w-35')
         with ui.expansion('Messi secret', icon = 'work').classes('w-full'):
-            with ui.scroll_area('w-80 h-64 border'):
+            with ui.scroll_area().classes('w-80 h-64 borde'):
                 ui.label('Exemple') 
 
     with ui.card().tight():
             ui.image('ronaldo.jpg').classes('w-35')
             with ui.expansion('Ronaldo secret', icon = 'work').classes('w-full'):
-                with ui.scroll_area('w-80 h-64 border'):
+                with ui.scroll_area().classes('w-80 h-64 borde'):
                     ui.label('Exemple') 
 
 
@@ -766,19 +766,19 @@ with ui.carousel(arrows = True, navigation = True).props('height = 340px'):
      with ui.carousel_slide().classes('p-0'):
          with ui.card().tight():
             ui.label('Messi')
-            with ui.card_section:
+            with ui.card_section():
                 ui.image('messi.jpg').classes('w-[280px]')
 
      with ui.carousel_slide().classes('p-0'):
          with ui.card().tight():
             ui.label('Ronaldo')
-            with ui.card_section:
+            with ui.card_section():
                 ui.image('ronaldo.jpg').classes('w-[280px]')
 
      with ui.carousel_slide().classes('p-0'):
          with ui.card().tight():
             ui.label('Ibrahimovic')
-            with ui.card_section:
+            with ui.card_section():
                 ui.image('ibrahimovic.jpg').classes('w-[280px]')
 
 
@@ -808,7 +808,7 @@ def show():
 #Menu Element : 3 petites barres en haut à droite de l'écran pour changer de 'page' -> Menu de site web (comme une nav)
 ##
 
-with ui,row().classes('w-full items-center'):
+with ui.row().classes('w-full items-center'):
      result = ui.label().classes('mr-auto')
      with ui.button(icon = 'menu'):
           with ui.menu() as menu:
@@ -880,7 +880,7 @@ def show_notify():
 #Dialog Element : Deux Input, un bouton 'show' qui renvoit une question à l'utilisateur : il demande s'il veut montrer ses input avec deux coix possible, oui ou non. Si non, rien montré, si oui, résultat des deux input montré
 ##
 
-with ui.dialog() as dialog, ui.card:
+with ui.dialog() as dialog, ui.card():
      ui.label('Are you Sure ?')
      with ui.row():
           ui.button('Yes', on_click = lambda: dialog.submit('Yes'))
@@ -903,9 +903,33 @@ country = ui.input('Country')
 text = ui.label('Info!')
 
 
+##
+#Page routing : Deux liens qui mènent chacun vers une page : une pour se connecter et une pour s'inscrire
+##
+
+@ui.page('/login')
+def login_page(green = True):
+     ui.label('Welcome to login form')
+     username = ui.input('Username')
+     password = ui.input('Password', password = True)
+     login_button = ui.button('Login')
+
+@ui.page('/signup')
+def signup_page(dark = True):
+     ui.label('Welcome to SignUp form')
+     username = ui.input('Username')
+     password = ui.input('Password', password = True)
+     signup_button = ui.button('SignUp')
+
+ui.link('Visit LogIn Form', login_page)
+ui.link('Visit SignUp Form', signup_page)
+
+
+## Fini
 
 
 
 
 
-ui.run()   #lancer programme
+
+ui.run   #lancer programme

@@ -5,7 +5,7 @@ class Carte:
 
     
     def afficher_description(self):
-        print(f"{self.nom} : {self.description}")
+        pass
         
     #Comment faires les actions de nuit et gérer les pouvoirs ?
 
@@ -19,47 +19,39 @@ class Sorciere(Carte):
     def utiliser_potion_vie(self):
         if self.potion_vie ==1:
             self.potion_vie -= 1
-        else:
-            print("Pas de potion disponible")
     
     def utiliser_potion_mort(self):
         if self.potion_mort ==1:
             self.potion_mort -= 1
-        else:
-            print("Pas de potion disponible")
 
-    def capacite_sorciere(self, victime, liste_joueurs):
-
-        print(f"Le joueur {victime.nom} a été choisi par les loups.")
-        print("Il vous reste :", self.potion_vie, "potion de vie et", self.potion_mort, "potion de mort")
-        x = int(input("Que voulez vous utiliser, choisissez 1 pour la potion de vie en le ressucitant, 2 pour la potion de mort afin d'éliminer quelqu'un et 3 pour ne rien faire :"))
+    def capacite_sorciere(self, index_victime, liste_joueurs, choix_sorcière):
 
         sauve_par_sorciere = False
         victime_sorciere = None
 
-        if x == 1:
+        if choix_sorcière == 1:
 
             if self.potion_vie == 1:
 
                 self.utiliser_potion_vie()
                 sauve_par_sorciere = True
-                print(f"Vous avez choisi de sauver {victime.nom}.")
 
             else:
 
-                print("Pas de potion de vie disponible.")
+                pass
 
-        elif x == 2:
+
+        elif choix_sorcière == 2:
 
             if self.potion_mort == 1:
 
                 self.utiliser_potion_mort()
-                n = int(input("Quel est le numéro de la personne que vous voulez tuer ? "))
-                victime_sorciere = liste_joueurs[n - 1]
+                victime_sorciere = liste_joueurs[index_victime]
 
             else:
 
-                print("Pas de potion de mort disponible.")
+                pass
+
 
         return sauve_par_sorciere, victime_sorciere
        
@@ -82,17 +74,17 @@ class Chasseur(Carte):
         self.liste_joueurs = liste_joueurs
 
     
-    def capacite_chasseur(self):
+    def capacite_chasseur(self, index_cible):
     
         if self.joueur_qui_a_la_carte.envie == False:
 
             n = int(input("Quel est le numéro du joueur que vous souhaitez tuer avant de mourir ? "))
             
-            self.liste_joueurs[n-1].mourir()
+            self.liste_joueurs[index_cible].mourir()
 
         else:
-            print("Vous ne pouvez pas encore utiliser votre capacité.")
 
+            pass
 
         
 class Voyante(Carte):
@@ -100,68 +92,58 @@ class Voyante(Carte):
         self.nom="Voyante"
         self.description="La capacité de votre carte est que, durant chaque tour pendant la nuit, vous avez le droit de connaître la carte du joueur de votre choix..."
 
-    def capacite_voyante(self, liste_joueurs):
+    def capacite_voyante(self, liste_joueurs, index_joueur):
 
-        n = int(input("Quelle est le numéro du joueur que vous souhaitez voir ?"))
-
-        carte_de_la_cible = liste_joueurs[n-1].carteatt.nom
-        print(f"La carte de {liste_joueurs[n-1].nom} est : {carte_de_la_cible}")
+        carte_de_la_cible = liste_joueurs[index_joueur].carteatt.nom
+        return f"La carte de {liste_joueurs[index_joueur].nom} est : {carte_de_la_cible}"
+    
 
 class PetiteFille(Carte):
     def __init__(self):
             self.nom="Petite-Fille" 
             self.description="La capacité de votre carte est que, lors du tour des loups garous uniquement, vous pouvez tricher en les observant discrètement en ouvrant vos yeux. Faites attention à ne pas être repéré, car vous risqueriez de..."
 
+
 class Cupidon(Carte):
     def __init__(self):
             self.nom="Cupidon" 
             self.description="La capacité de votre carte est que vous pouvez mettre en couple deux personnes dans la partie. Un seul couple peut-être en vie à la fois. Si un des deux partenaires meurt, l'autre mourra aussi-tôt dans la tristesse..."
 
-    def capacite_cupidon(self, liste_joueurs):
+    def capacite_cupidon(self, liste_joueurs, j1, j2):
 
-        j1 = int(input("Quel est le numéro du premier joueur voudriez vous mettre en couple ? :"))
-        j2 = int(input("Quel est le numéro du deuxième joueur voudriez vous mettre en couple ? :"))
-
-        joueur1 = liste_joueurs[j1 - 1]
-        joueur2 = liste_joueurs[j2 - 1]
+        joueur1 = liste_joueurs[j1 ]
+        joueur2 = liste_joueurs[j2]
 
         joueur1.amoureux = joueur2
         joueur2.amoureux = joueur1
 
-        print("Cupidon a bien tiré sa flèche et a mis au monde un tout nouveau couple !!")
       
 class Villageois(Carte):
     def __init__(self):
         self.nom="Villageois" 
         self.description="Votre carte n'a malheureusement pas de capacité spéciale durant la nuit, vous devrez donc être le plus à l'affût possible durant le vote !!!"
 
+
 class Voleur(Carte):
     def __init__(self):
             self.nom="Voleur"
             self.description="La capacité de votre carte est que, durant votre tour, vous pouvez échanger cette carte avec la carte d'un autre joueur choisi. Ne gâchez pas cette aptitude en faisant le mauvais choix !!!"
 
-    def capacite_voleur(self, liste_joueurs):
+    def capacite_voleur(self, liste_joueurs, choix_voleur, index_cible_voleur):
 
         voleur_joueur = None
         for j in liste_joueurs:
             if j.carteatt.nom == "Voleur":
                 voleur_joueur = j
-
-        a = input("Voulez vous dérobez la carte de quelqu'un cette nuit ? (oui/non) :")
         
-        if a == "oui":
+        if choix_voleur == True:
 
-            n = int(input("Quel est le numéro du joueur que vous souhaitez cambrioler cette nuit ? :"))
-
-            cible = liste_joueurs[n-1]
+            cible = liste_joueurs[index_cible_voleur]
 
             carte_temporaire = voleur_joueur.carteatt
             voleur_joueur.carteatt = cible.carteatt
             cible.carteatt = carte_temporaire
 
-            print("Le voleur a bien dérobé la maison de quelqu'un parmi nous cette nuit.. N'oubliez pas de fairre attention !!")
-
         else:
 
-            print("Le voleur a décidé de rester tranquillement chez lui cette nuit")
-
+            pass

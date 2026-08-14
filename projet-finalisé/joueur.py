@@ -18,6 +18,3 @@ class Joueur:
     def ressuciter(self):
         self.envie = True
     
-    def voter(self):
-        vote = int(input(f"{self.nom}, qui votez-vous (insérer nombre) ? "))
-        return vote

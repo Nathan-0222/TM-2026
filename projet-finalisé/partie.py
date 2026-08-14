@@ -11,94 +11,230 @@ class Partie:
         self.sorcière = None
         self.petite_fille = None
 
-    def ajouter_joueur(self):
+        self.phase = "inscription"
+        self.message = "Bonjour, inscrivez de 7 à 15 joueurs pour commencer !!"
 
-        nj = int(input("Combien de joueurs (entre 7 et 15) ?"))
-        while nj < 7 or nj > 15:
-            nj = int(input("Valeur invalide, rentrez une valeur entre 7 et 15 : "))  
+        self.victime_loups = None
+        self.sauve_par_sorcière = False
+        self.victime_sorcière = None
+        self.première_nuit = True
 
-        for i in range(nj):
-            nom_joueur = input(f"Nom du joueur {i+1}: ")
-            nouveau_joueur = Joueur(nom_joueur, None) 
-            self.liste_joueurs.append(nouveau_joueur)
-            print(nom_joueur, "a rejoint la partie !")
+        self.a_deja_vote = []   #Liste pour savoir qui à déjà voté
+
+    def ajouter_joueur(self, nom_joueur):
+            
+        nouveau_joueur = Joueur(nom_joueur, None) 
+        self.liste_joueurs.append(nouveau_joueur)
+        self.message = f"{nom_joueur} a rejoint la partie !!"
 
     def distribuer_cartes (self):
         self.nombre = len(self.liste_joueurs)
         self.pioche = []
 
-        print("Dans ce jeu du loup-garou, vous devez être de 7 à 15 joueurs maximum pour jouer")
-
         if self.nombre == 7:
              self.pioche = [LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+             
         elif self.nombre == 8:
              self.pioche = [LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+             
         elif self.nombre == 9:
              self.pioche = [LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), Cupidon(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+             
         elif self.nombre == 10:
              self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+             
         elif self.nombre == 11:
              self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Cupidon(), PetiteFille(), Villageois(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+             
         elif self.nombre == 12:
              self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+            
         elif self.nombre == 13:
              self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+             
         elif self.nombre == 14:
              self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+            
         elif self.nombre == 15:
              self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois()]
-             print("La composition de la partie est :")
-             for carte in self.pioche:
-                print("-", carte.nom)
+
+        self.message = "La composition de la partie est :\n"
+        for carte in self.pioche:
+            self.message = self.message + "-" + carte.nom + "\n"
         
         random.shuffle (self.pioche)
 
         for i in range (self.nombre):
              self.liste_joueurs[i].carteatt = self.pioche[i]
 
-        print("Les rôles sont attribuées !!!")
+        self.message = "Les rôles sont attribuées !!!"
+
+
+    def commencer_partie(self):
+
+        self.distribuer_cartes()
+        self.phase = "cupidon"
+        self.première_nuit = True
+        self.message = "Début de la partie \n La première nuit commence, le village s'endort..."
+
+
+    def passer_phase_suivante(self, phase_actuelle):
+
+        if phase_actuelle == "cupidon":
+
+            voleur_present = False
+            for j in self.liste_joueurs:
+                if j.carteatt.nom == "Voleur" and j.envie == True:
+                    voleur_present = True
+
+            if voleur_present == True:
+                self.phase = "voleur"
+                self.message = "Cupidon se rendort... \nLe Voleur se réveille !!"
+
+            else:
+                self.passer_phase_suivante()
+
+        if phase_actuelle == "voleur":
         
+            voyante_present = False
+            for j in self.liste_joueurs:
+                if j.carteatt.nom == "Voyante" and j.envie == True:
+                    voyante_present = True
+                    
+            if voyante_present == True:
+                self.phase = "voyante"
+                self.message = "Le Voleur se rendort... \nLa Voyante se réveille !!"
+                    
+            else:
+                self.passer_phase_suivante()
 
-
-
-    def vote_de_jour(self):
-
-        self.affiche_joueurs()
-
-        liste_votes = [0] * len(self.liste_joueurs)
-
-        for joueur in self.liste_joueurs:
-            if joueur.envie == True:
-                vote = joueur.voter() - 1
-                liste_votes[vote] += 1
+        if phase_actuelle == "voyante":
         
-        index_max = liste_votes.index(max(liste_votes))
-        print("Le joueur", self.liste_joueurs[index_max].nom,"est mort par vote. Sa carte était :", self.liste_joueurs[index_max].carteatt.nom)
-        self.liste_joueurs[index_max].mourir()
+            self.phase = "loups"
+            self.a_deja_vote = []
+            for j in self.liste_joueurs:
+                j.nb_vote = 0
+            self.message = "La Voyante se rendort... \nLes Loups se réveillent pour choisir leur victime !!"
+
+        
+        if phase_actuelle == "loups":
+        
+            sorcière_present = False
+            for j in self.liste_joueurs:
+                if j.carteatt.nom == "Sorcière" and (j.envie == True or j == self.victime_loups):
+                    sorcière_present = True
+        
+            if sorcière_present == True:
+                self.phase = "Sorcière"
+                self.message = "Les Loups Garous se rendorment... \nLa Sorcière se réveille !!"
+        
+            else:
+                self.passer_phase_suivante()
+
+        if phase_actuelle == "sorcière":
+        
+            self.resoudre_nuit()
+    
+
+
+    def action_cupidon(self, index_j1, index_j2):
+    
+        for j in self.liste_joueurs:
+            if j.carteatt.nom == "Cupidon" and j.envie == True:
+                j.carteatt.capacite_cupidon(self.liste_joueurs, index_j1, index_j2)
+                self.message = "Cupidon a bien tiré sa flèche et a mis au monde un tout nouveau couple !!"
+    
+        self.passer_phase_suivante("cupidon")
+
+
+    def action_voleur(self, choix_voleur, index_cible_voleur):
+
+        for j in self.liste_joueurs:
+            if j.carteatt.nom == "Voleur" and j.envie == True:
+                j.carteatt.capacite_voleur(self.liste_joueurs, choix_voleur, index_cible_voleur)
+                if choix_voleur == True:
+                    self.message = "Le voleur a bien dérobé la carte de quelqu'un cette nuit !"
+                else:
+                    self.message = "Le voleur a décidé de rester tranquillement chez lui cette nuit."
+
+        self.passer_phase_suivante("voleur")
+
+
+    def action_voyante(self, index_joueur):
+        
+        for j in self.liste_joueurs:
+            if j.carteatt.nom == "Voyante" and j.envie == True:
+                j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
+                self.message = "Cupidon a bien tiré sa flèche et a mis au monde un tout nouveau couple !!"
+        
+        self.passer_phase_suivante("cupidon")
+
+
+    def vote_de_nuit(self, index_cible, nom_du_loup):   #fait en sorte que quand un loup voteil esr enregistré dans la liste
+
+        self.liste_joueurs[index_cible].nb_vote += 1
+        self.a_deja_vote.append(nom_du_loup)   #vote enregistré
+ 
+        loups_restants = 0   #je ferai dans interface.py en sorte que quand un loup a voté, tant que loups restants n'est pas egal à 0, le loup suivant votera
+        for j in self.liste_joueurs:
+            if j.carteatt.nom == "Loup-Garou" and j.envie == True:
+                if j.nom not in self.a_deja_vote:
+                    loups_restants += 1
+
+        if loups_restants == 0:
+ 
+            index_max = 0
+            for i in range(len(self.liste_joueurs)):
+                if self.liste_joueurs[i].nb_vote > self.liste_joueurs[index_max].nb_vote:
+                    index_max = i
+ 
+            self.victime_loups = self.liste_joueurs[index_max]
+ 
+            for j in self.liste_joueurs:
+                j.nb_vote = 0   #compteur à 0 pour vote_jour
+            self.a_deja_vote = []
+ 
+            self.passer_phase_nuit("loups")
+
+
+    def action_sorciere(self, index_victime, choix_sorciere):
+
+        for j in self.liste_joueurs:
+            if j.carteatt.nom == "Sorcière" and (j.envie == True or j == self.victime_loups):
+                self.sauve_par_sorcière, self.victime_sorcière = j.carteatt.capacite_sorciere(self.liste_joueurs, self.victime_loups, index_victime, choix_sorciere)
+                if choix_sorciere == 1:
+                    self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
+                elif choix_sorciere == 2:
+                    self.message = "La Sorcière a utilisé sa potion de mort."
+                else:
+                    self.message = "La Sorcière n'a rien fait."
+
+        self.passer_phase_suivante("sorciere")
+
+
+
+    def resoudre_nuit(self):
+
+        morts_cette_nuit = []
+
+        if self.victime_loups != None and self.sauve_par_sorcière == False:
+            morts_cette_nuit.append(self.victime_loups)
+
+        if self.victime_sorcière != None:
+            morts_cette_nuit.append(self.victime_sorcière)
+
+        self.message = " LE SOLEIL SE LÈVE \nLe village se réveille...\n"
+
+        if len(morts_cette_nuit) == 0:
+            self.message = self.message + "Personne n'est mort cette nuit !!!"
+
+        else:
+            for j in morts_cette_nuit:
+                if j.envie == True:
+                    j.mourir()
+                    self.message = self.message + "Le joueur " + j.nom + " nous a quitté cette nuit, sa carte était : " + j.carteatt.nom + "\n"
+
+
 
     def vérification_victoire(self):
 
@@ -112,139 +248,61 @@ class Partie:
                     villageois += 1
 
         if loups == 0 :
-            print("\nVICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !")
+            self.message = self.message + "VICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !"
+            self.phase = "fin"
             return True
+        
         elif loups >= villageois:
-            print("\nDÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village.")
+            self.message = self.message + "DÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village."
+            self.phase = "fin"
             return True
+        
         else:
             return False
-    
-    def affiche_joueurs(self):
-        print("Voici la liste des joueurs : ")
-        for i in range(len(self.liste_joueurs)):
-            if self.liste_joueurs[i].envie:
-                print(f"{i + 1} - {self.liste_joueurs[i].nom}")
-            else:
-                print(f"(Décédé) - {self.liste_joueurs[i].nom}")
 
-        
-    def vote_de_nuit(self):
-        
-        self.affiche_joueurs()
 
-        liste_votes = [0] * len(self.liste_joueurs)
 
+    def vote_de_jour(self, nom_du_votant, index_cible):   #même système que vote_de_nuit
+
+        self.liste_joueurs[index_cible].nb_vote += 1
+        self.a_deja_vote.append(nom_du_votant)   #vote enregistré
+         
+        votants_restants = 0
         for j in self.liste_joueurs:
-            if j.carteatt.nom == "Loup-Garou" and j.envie == True:
-                vote = j.voter() - 1
-                liste_votes[vote] += 1
+            if j.envie == True:
+                if j.nom not in self.a_deja_vote:
+                    votants_restants += 1
         
-        index_max = liste_votes.index(max(liste_votes))
-        victime = self.liste_joueurs[index_max]
+        if votants_restants == 0:
+         
+            index_max = 0
+            for i in range(len(self.liste_joueurs)):
+                if self.liste_joueurs[i].nb_vote > self.liste_joueurs[index_max].nb_vote:
+                    index_max = i
+         
+            self.message = "Le joueur " + self.liste_joueurs[index_max].nom + " est mort par vote. Sa carte était : " + self.liste_joueurs[index_max].carteatt.nom
+            self.liste_joueurs[index_max].mourir()
+         
+            for j in self.liste_joueurs:
+                j.nb_vote = 0   #compteur à 0 pour vote_jour
+            self.a_deja_vote = []
+         
 
-        return victime
+            if self.vérification_victoire():
+                return
         
-    
-
-
-    
-    def run(self):
-
-        self.ajouter_joueur()
-        self.distribuer_cartes()
-
-        print("\n=== DÉBUT DE LA PARTIE ===")
-        premiere_nuit = True 
-        
-        while True:
-            # 1. PHASE DE NUIT
-            print("\n--- LA NUIT TOMBE ---")
-            print("Le village s'endort, tout le monde ferme les yeux.")
-
-            if premiere_nuit:
-                for j in self.liste_joueurs:
-                    if j.carteatt.nom == "Cupidon" and j.envie == True:
-                        print("\nCupidon se réveille.")
-                        self.affiche_joueurs()
-                        j.carteatt.capacite_cupidon(self.liste_joueurs)      
-                        print("Cupidon se rendort.")
-            
-            premiere_nuit = False 
-
-            for j in self.liste_joueurs:
-                if j.carteatt.nom == "Voleur" and j.envie == True:
-                    print("\nLe Voleur se réveille.")
-                    self.affiche_joueurs()
-                    j.carteatt.capacite_voleur(self.liste_joueurs)    
-                    print("Le Voleur se rendort.")
-
-            for j in self.liste_joueurs:
-                if j.carteatt.nom == "Voyante" and j.envie == True:
-                    print("\nLa Voyante se réveille.")
-                    self.affiche_joueurs()
-                    j.carteatt.capacite_voyante(self.liste_joueurs) 
-                    print("La Voyante se rendort.")
-
-            print("\nLes Loups-Garous se réveillent pour choisir leur victime...")
-            
-            for j in self.liste_joueurs:
-                if j.carteatt.nom == "Petite-Fille" and j.envie == True:
-                    print("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
-
-            victime = self.vote_de_nuit()
-            print("Les Loups-Garous se rendorment.")
-
-            sauve_par_sorciere = False
-            victime_sorciere = None
-
-            for j in self.liste_joueurs:
-                if j.carteatt.nom == "Sorciere" and (j.envie == True or j == victime):
-                    print("\nLa Sorcière se réveille.")
-                    self.affiche_joueurs()
-                    sauve_par_sorciere, victime_sorciere = j.carteatt.capacite_sorciere(victime, self.liste_joueurs) 
-                    print("La Sorcière se rendort.")
-
-            # 2. PHASE DE JOUR (RÉVEIL)
-
-            print("\n--- LE SOLEIL SE LÈVE ---")
-            print("Le village se réveille.")
-
-            # Liste des morts à annoncer ce matin
-
-            morts_cette_nuit = []
-
-            # Si la victime des loups n'a pas été sauvée
-
-            if sauve_par_sorciere == False and victime:
-                morts_cette_nuit.append(victime)
-
-            # Si la sorcière a utilisé la potion de mort
-
-            if victime_sorciere != None:
-                morts_cette_nuit.append(victime_sorciere)
-
-            # Annonce globale
-
-            if len(morts_cette_nuit) == 0:
-                print("Personne n'est mort cette nuit !!!")
-
             else:
-                for j in morts_cette_nuit:
-                    if j.envie: 
-                        j.mourir()
-                        print(f"Le joueur {j.nom} nous a quitté cette nuit, sa carte était : {j.carteatt.nom}")
-
-            # VÉRIFICATION DE VICTOIRE
-            
-            if self.vérification_victoire():
-                break
-       
-            # 3. PHASE DE JOUR (LE VOTE)
-          
-            self.vote_de_jour()
-            
-            # --- VÉRIFICATION DE VICTOIRE (après le vote) ---
-
-            if self.vérification_victoire():
-                break
+                voyante_presente = False
+                for j in self.liste_joueurs:
+                    if j.carteatt.nom == "Voyante" and j.envie == True:
+                        voyante_presente = True
+        
+                if voyante_presente == True:
+                    self.phase = "voyante"
+                    self.message = self.message + "LA NUIT TOMBE... \nLa Voyante se réveille !!"
+                else:
+                    self.phase = "loups"
+                    self.a_deja_vote = []
+                    for j in self.liste_joueurs:
+                        j.nb_vote = 0
+                    self.message = self.message + "LA NUIT TOMBE... \nLes Loups-Garous se réveillent !!"

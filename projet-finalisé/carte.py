@@ -24,12 +24,12 @@ class Sorciere(Carte):
         if self.potion_mort ==1:
             self.potion_mort -= 1
 
-    def capacite_sorciere(self, index_victime, liste_joueurs, choix_sorcière):
+    def capacite_sorciere(self, index_victime, liste_joueurs, choix_sorciere):
 
         sauve_par_sorciere = False
         victime_sorciere = None
 
-        if choix_sorcière == 1:
+        if choix_sorciere == 1:
 
             if self.potion_vie == 1:
 
@@ -41,7 +41,7 @@ class Sorciere(Carte):
                 pass
 
 
-        elif choix_sorcière == 2:
+        elif choix_sorciere == 2:
 
             if self.potion_mort == 1:
 
@@ -109,10 +109,10 @@ class Cupidon(Carte):
             self.nom="Cupidon" 
             self.description="La capacité de votre carte est que vous pouvez mettre en couple deux personnes dans la partie. Un seul couple peut-être en vie à la fois. Si un des deux partenaires meurt, l'autre mourra aussi-tôt dans la tristesse..."
 
-    def capacite_cupidon(self, liste_joueurs, j1, j2):
+    def capacite_cupidon(self, liste_joueurs, index_j1, index_j2):
 
-        joueur1 = liste_joueurs[j1 ]
-        joueur2 = liste_joueurs[j2]
+        joueur1 = liste_joueurs[index_j1]
+        joueur2 = liste_joueurs[index_j2]
 
         joueur1.amoureux = joueur2
         joueur2.amoureux = joueur1

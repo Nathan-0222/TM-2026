@@ -181,3 +181,124 @@ def page_jeu():
                 partie_en_cours.passer_phase_nuit("voyante")
                 zone_message.refresh()
                 zone_actions.refresh()
+
+
+        #loup
+        elif partie_en_cours.phase == "loups":
+
+            for j in partie_en_cours.liste_joueurs:
+                if j.carteatt.nom == "Petite-Fille" and j.envie == True:
+                    ui.label("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
+
+            loup_actuel = None
+            for j in partie_en_cours.liste_joueurs:
+                if j.carteatt.nom == "Loup-Garou" and j.envie == True:
+                    if j.nom not in partie_en_cours.a_deja_vote:
+                        loup_actuel = j
+                        break
+
+            if loup_actuel != None:
+                ui.label("C'est au tour de " + loup_actuel.nom + " (Loup-Garou) de voter :")
+                champ_cible = ui.number(label="Numéro de la victime", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
+
+                def cliquer_vote_loup():
+                    index_cible = int(champ_cible.value) - 1
+                    partie_en_cours.vote_de_nuit(index_cible, loup_actuel.nom)
+                    zone_message.refresh()
+                    zone_joueurs.refresh()
+                    zone_actions.refresh()
+
+                ui.button("Voter", on_click=cliquer_vote_loup)
+
+
+        #sorciere
+        elif partie_en_cours.phase == "sorciere":
+
+            potions = None   
+            for j in partie_en_cours.liste_joueurs:
+                if j.carteatt.nom == "Sorciere" and (j.envie == True or j == partie_en_cours.victime_loups):
+                    potions = j.carteatt
+
+            if potions != None:   #joue pas si pas de potion
+                ui.label("La Sorcière se réveille.")
+                if partie_en_cours.victime_loups != None:
+                    ui.label("Les loups ont choisi : " + partie_en_cours.victime_loups.nom)
+                ui.label("Il vous reste : " + str(potions.potion_vie) + " potion de vie et " + str(potions.potion_mort) + " potion de mort")
+                ui.label("Choisissez  1 = sauver la victime, 2 = tuer quelqu'un, 3 = ne rien faire")
+
+                champ_choix = ui.number(label="Votre choix (1, 2 ou 3)", value=3, min=1, max=3)
+                champ_cible_mort = ui.number(label="Si choix 2 : numéro du joueur à tuer", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
+
+                def cliquer_sorciere():
+                    choix = int(champ_choix.value)
+                    index_cible_mort = int(champ_cible_mort.value) - 1
+                    partie_en_cours.action_sorciere(choix, index_cible_mort)
+                    zone_message.refresh()
+                    zone_joueurs.refresh()
+                    zone_actions.refresh()
+
+                ui.button("Valider", on_click=cliquer_sorciere)
+
+            else:
+                partie_en_cours.passer_phase_nuit("sorciere")
+                zone_message.refresh()
+                zone_actions.refresh()
+
+
+        #matin
+        elif partie_en_cours.phase == "matin":
+
+            if partie_en_cours.vérification_victoire():
+                zone_message.refresh()
+                zone_joueurs.refresh()
+                zone_actions.refresh()
+                return
+
+            def cliquer_passer_au_vote():
+                partie_en_cours.a_deja_vote = []
+                for j in partie_en_cours.liste_joueurs:
+                    j.nb_vote = 0
+                partie_en_cours.phase = "vote_jour"
+                partie_en_cours.message = "--- LE VILLAGE VOTE ---\nChaque joueur vivant vote pour éliminer un suspect."
+                zone_message.refresh()
+                zone_joueurs.refresh()
+                zone_actions.refresh()
+
+            ui.button("Passer au vote du village →", on_click=cliquer_passer_au_vote)
+
+
+        #vote matin
+        elif partie_en_cours.phase == "vote_jour":
+
+            votant_actuel = None
+            for j in partie_en_cours.liste_joueurs:
+                if j.envie == True and j.nom not in partie_en_cours.a_deja_vote:
+                    votant_actuel = j
+                    break
+
+            if votant_actuel != None:
+                ui.label("C'est au tour de " + votant_actuel.nom + " de voter :")
+                champ_cible = ui.number(label="Numéro du joueur à éliminer", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
+
+                def cliquer_vote_jour():
+                    index_cible = int(champ_cible.value) - 1
+                    partie_en_cours.vote_de_jour(index_cible, votant_actuel.nom)
+                    zone_message.refresh()
+                    zone_joueurs.refresh()
+                    zone_actions.refresh()
+
+                ui.button("Voter", on_click=cliquer_vote_jour)
+
+
+        #fin potentiel
+        elif partie_en_cours.phase == "fin":
+
+            ui.label("La partie est terminée !")
+            ui.button("Retour à l'accueil", on_click=lambda: ui.navigate.to('/'))
+
+
+    zone_message()
+    ui.separator()
+    zone_joueurs()
+    ui.separator()
+    zone_actions()

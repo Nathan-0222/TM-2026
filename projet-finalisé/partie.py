@@ -75,7 +75,7 @@ class Partie:
         self.distribuer_cartes()
         self.phase = "cupidon"
         self.première_nuit = True
-        self.message = "Début de la partie \n La première nuit commence, le village s'endort..."
+        self.message = "Début de la partie \n --- LE VILLAGE S'ENDORT... ---"
 
 
     def passer_phase_suivante(self, phase_actuelle):

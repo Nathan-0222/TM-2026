@@ -248,6 +248,8 @@ def page_jeu():
         #matin
         elif partie_en_cours.phase == "matin":
 
+
+            ui.label('--- LE VILLAGE SE REVEILLE ---')
             if partie_en_cours.vérification_victoire():
                 zone_message.refresh()
                 zone_joueurs.refresh()

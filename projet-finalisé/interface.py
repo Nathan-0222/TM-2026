@@ -3,7 +3,7 @@ from partie import *
 
 partie_en_cours = Partie("ciao")
 
-@ui.page('/accueil')
+@ui.page('/')
 def page_acceuil():
 
     ui.label('Bienvenu dans ce jeu du Loup-Garou')
@@ -63,7 +63,7 @@ def page_acceuil():
 def page_jeu():
 
     if partie_en_cours.phase == "inscription":
-        ui.navigate.to('/accueil')
+        ui.navigate.to('/')
         return
 
     ui.label('Jeu du Loup Garou')
@@ -245,6 +245,21 @@ def page_jeu():
                 zone_actions.refresh()
 
 
+
+        elif partie_en_cours.phase == "chasseur":
+
+            ui.label("Le Chasseur tire sa dernière balle ! Choisissez sa cible :")
+            champ_cible = ui.number(label="Choisissez le numéro de votre cible :", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
+
+            def tir_chasseur():
+                partie_en_cours.action_chasseur(champ_cible.value - 1)
+                zone_message.refresh()
+                zone_joueurs.refresh()
+                zone_actions.refresh()
+
+            ui.button("Tirer", on_click=tir_chasseur)
+
+
         #matin
         elif partie_en_cours.phase == "matin":
 
@@ -304,3 +319,6 @@ def page_jeu():
     zone_joueurs()
     ui.separator()
     zone_actions()
+
+
+ui.run(title="Loup Garou", reload=False, port=8085)

@@ -20,6 +20,7 @@ class Partie:
         self.première_nuit = True
 
         self.a_deja_vote = []   #Liste pour savoir qui à déjà voté
+        self.prochaine_phase = "matin"   #chasseur
 
     def ajouter_joueur(self, nom_joueur):
             
@@ -212,6 +213,16 @@ class Partie:
         self.passer_phase_suivante("sorciere")
 
 
+    def action_chasseur(self, index_cible_chasseur):
+        cible = self.liste_joueurs[index_cible_chasseur]
+        if cible.envie == True:
+            cible.mourir()
+            self.message = self.message + "\nLe Chasseur a emporté " + cible.nom + "dans sa tombe !"
+
+        if not self.vérification_victoire():
+            self.phase = self.prochaine_phase
+
+
 
     def resoudre_nuit(self):
 
@@ -225,6 +236,8 @@ class Partie:
 
         self.message = " LE SOLEIL SE LÈVE \nLe village se réveille...\n"
 
+        chasseur_mort = False
+
         if len(morts_cette_nuit) == 0:
             self.message = self.message + "Personne n'est mort cette nuit !!!"
 
@@ -233,6 +246,20 @@ class Partie:
                 if j.envie == True:
                     j.mourir()
                     self.message = self.message + "Le joueur " + j.nom + " nous a quitté cette nuit, sa carte était : " + j.carteatt.nom + "\n"
+                    if j.carteatt.nom == "Chasseur":
+                        chasseur_mort = True
+
+        if self.vérification_victoire():
+            return
+
+        #chasseur
+        if chasseur_mort == True:
+            self.phase = "chasseur"
+            self.prochaine_phase = "matin"
+            self.message += "\nLe Chasseur doit désigner sa cible !"
+
+        else:
+            self.phase = "matin"
 
 
 
@@ -279,6 +306,8 @@ class Partie:
             for i in range(len(self.liste_joueurs)):
                 if self.liste_joueurs[i].nb_vote > self.liste_joueurs[index_max].nb_vote:
                     index_max = i
+
+            
          
             self.message = "Le joueur " + self.liste_joueurs[index_max].nom + " est mort par vote. Sa carte était : " + self.liste_joueurs[index_max].carteatt.nom
             self.liste_joueurs[index_max].mourir()
@@ -296,13 +325,20 @@ class Partie:
                 for j in self.liste_joueurs:
                     if j.carteatt.nom == "Voyante" and j.envie == True:
                         voyante_presente = True
-        
+
                 if voyante_presente == True:
-                    self.phase = "voyante"
+                    phase_nuit = "voyante"
                     self.message = self.message + "LA NUIT TOMBE... \nLa Voyante se réveille !!"
                 else:
-                    self.phase = "loups"
+                    phase_nuit = "loups"
                     self.a_deja_vote = []
                     for j in self.liste_joueurs:
                         j.nb_vote = 0
                     self.message = self.message + "LA NUIT TOMBE... \nLes Loups-Garous se réveillent !!"
+
+                if self.liste_joueurs[index_max].carteatt.nom == "Chasseur":
+                    self.phase = "chasseur"
+                    self.prochaine_phase = phase_nuit
+                    self.message = self.message + "\nLe Chasseur est mort et doit tirer !"
+                else:
+                    self.phase = phase_nuit

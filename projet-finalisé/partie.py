@@ -15,8 +15,8 @@ class Partie:
         self.message = "Bonjour, inscrivez de 7 à 15 joueurs pour commencer !!"
 
         self.victime_loups = None
-        self.sauve_par_sorcière = False
-        self.victime_sorcière = None
+        self.sauve_par_sorciere = False
+        self.victime_sorciere = None
         self.première_nuit = True
 
         self.a_deja_vote = []   #Liste pour savoir qui à déjà voté
@@ -78,7 +78,7 @@ class Partie:
         self.message = "Début de la partie \n --- LE VILLAGE S'ENDORT... ---"
 
 
-    def passer_phase_suivante(self, phase_actuelle):
+    def passer_phase_nuit(self, phase_actuelle):
 
         if phase_actuelle == "cupidon":
 
@@ -92,7 +92,7 @@ class Partie:
                 self.message = "Cupidon se rendort... \nLe Voleur se réveille !!"
 
             else:
-                self.passer_phase_suivante()
+                self.passer_phase_nuit("cupidon")
 
         if phase_actuelle == "voleur":
         
@@ -106,7 +106,7 @@ class Partie:
                 self.message = "Le Voleur se rendort... \nLa Voyante se réveille !!"
                     
             else:
-                self.passer_phase_suivante()
+                self.passer_phase_nuit("voleur")
 
         if phase_actuelle == "voyante":
         
@@ -125,13 +125,13 @@ class Partie:
                     sorcière_present = True
         
             if sorcière_present == True:
-                self.phase = "Sorcière"
+                self.phase = "sorciere"
                 self.message = "Les Loups Garous se rendorment... \nLa Sorcière se réveille !!"
         
             else:
-                self.passer_phase_suivante()
+                self.passer_phase_nuit("loups")
 
-        if phase_actuelle == "sorcière":
+        if phase_actuelle == "sorciere":
         
             self.resoudre_nuit()
     
@@ -165,7 +165,7 @@ class Partie:
         for j in self.liste_joueurs:
             if j.carteatt.nom == "Voyante" and j.envie == True:
                 j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
-                self.message = "Cupidon a bien tiré sa flèche et a mis au monde un tout nouveau couple !!"
+                self.message = j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
         
         self.passer_phase_suivante("cupidon")
 
@@ -201,7 +201,7 @@ class Partie:
 
         for j in self.liste_joueurs:
             if j.carteatt.nom == "Sorcière" and (j.envie == True or j == self.victime_loups):
-                self.sauve_par_sorcière, self.victime_sorcière = j.carteatt.capacite_sorciere(self.liste_joueurs, self.victime_loups, index_victime, choix_sorciere)
+                self.sauve_par_sorcière, self.victime_sorcière = j.carteatt.capacite_sorciere(self.liste_joueurs, index_victime, choix_sorciere)
                 if choix_sorciere == 1:
                     self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
                 elif choix_sorciere == 2:

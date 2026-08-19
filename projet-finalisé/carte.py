@@ -75,16 +75,10 @@ class Chasseur(Carte):
 
     
     def capacite_chasseur(self, index_cible):
-    
+
         if self.joueur_qui_a_la_carte.envie == False:
 
-            n = int(input("Quel est le numéro du joueur que vous souhaitez tuer avant de mourir ? "))
-            
             self.liste_joueurs[index_cible].mourir()
-
-        else:
-
-            pass
 
         
 class Voyante(Carte):

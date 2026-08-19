@@ -3,7 +3,7 @@ from partie import *
 
 partie_en_cours = Partie("ciao")
 
-@ui.page('/acceuil')
+@ui.page('/accueil')
 def page_acceuil():
 
     ui.label('Bienvenu dans ce jeu du Loup-Garou')
@@ -27,7 +27,7 @@ def page_acceuil():
 
             def cliquer_commencer():
                 partie_en_cours.commencer_partie()
-                ui.navigate.to(/jeu)
+                ui.navigate.to('/jeu')
 
             ui.button('Commencer Partie', on_click=cliquer_commencer)
 
@@ -95,7 +95,7 @@ def page_jeu():
         if partie_en_cours.phase == "cupidon":
 
             cupidon_present = False
-            for j in range(len(partie_en_cours.liste_joueurs)):
+            for j in partie_en_cours.liste_joueurs:
                 if j.carteatt.nom == "cupidon" and j.envie == True:
                     cupidon_present = True
 
@@ -106,8 +106,8 @@ def page_jeu():
                 champ_j2 = ui.number(label='Numéro du 2ème joueur', value=1, min=1, max=len(partie_en_cours.liste_joueurs))
 
                 def cliquer_cupidon():
-                    index_j1 = int(champ_j1) - 1
-                    index_j2 = int(champ_j2) - 1
+                    index_j1 = int(champ_j1.value) - 1
+                    index_j2 = int(champ_j2.value) - 1
                     partie_en_cours.action_cupidon(index_j1, index_j2)
                     zone_message.refresh()
                     zone_joueurs.refresh()
@@ -117,7 +117,7 @@ def page_jeu():
 
             else:
 
-                partie_en_cours.passer_phase_suivante("cupidon")
+                partie_en_cours.passer_phase_nuit("cupidon")
                 zone_message.refresh()
                 zone_actions.refresh()
 

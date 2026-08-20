@@ -23,7 +23,7 @@ def page_acceuil():
 
     @ui.refreshable
     def zone_bouton_commencer():
-        if len(partie_en_cours.liste_joueurs) > 7 and len(partie_en_cours.liste_joueurs) < 15:
+        if len(partie_en_cours.liste_joueurs) => 7 and len(partie_en_cours.liste_joueurs) < 15:
 
             def cliquer_commencer():
                 partie_en_cours.commencer_partie()

@@ -93,7 +93,7 @@ class Partie:
                 self.message = "Cupidon se rendort... \nLe Voleur se réveille !!"
 
             else:
-                self.passer_phase_nuit("cupidon")
+                self.passer_phase_nuit("voleur")
 
         if phase_actuelle == "voleur":
         
@@ -107,7 +107,7 @@ class Partie:
                 self.message = "Le Voleur se rendort... \nLa Voyante se réveille !!"
                     
             else:
-                self.passer_phase_nuit("voleur")
+                self.passer_phase_nuit("voyante")
 
         if phase_actuelle == "voyante":
         
@@ -130,7 +130,7 @@ class Partie:
                 self.message = "Les Loups Garous se rendorment... \nLa Sorcière se réveille !!"
         
             else:
-                self.passer_phase_nuit("loups")
+                self.passer_phase_nuit("sorciere")   #essai correction bug
 
         if phase_actuelle == "sorciere":
         

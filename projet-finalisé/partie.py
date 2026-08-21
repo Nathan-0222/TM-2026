@@ -145,7 +145,7 @@ class Partie:
                 j.carteatt.capacite_cupidon(self.liste_joueurs, index_j1, index_j2)
                 self.message = "Cupidon a bien tiré sa flèche et a mis au monde un tout nouveau couple !!"
     
-        self.passer_phase_suivante("cupidon")
+        self.passer_phase_nuit("cupidon")
 
 
     def action_voleur(self, choix_voleur, index_cible_voleur):
@@ -158,7 +158,7 @@ class Partie:
                 else:
                     self.message = "Le voleur a décidé de rester tranquillement chez lui cette nuit."
 
-        self.passer_phase_suivante("voleur")
+        self.passer_phase_nuit("voleur")
 
 
     def action_voyante(self, index_joueur):
@@ -168,7 +168,7 @@ class Partie:
                 j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
                 self.message = j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
         
-        self.passer_phase_suivante("cupidon")
+        self.passer_phase_nuit("voyante")
 
 
     def vote_de_nuit(self, index_cible, nom_du_loup):   #fait en sorte que quand un loup voteil esr enregistré dans la liste
@@ -210,7 +210,7 @@ class Partie:
                 else:
                     self.message = "La Sorcière n'a rien fait."
 
-        self.passer_phase_suivante("sorciere")
+        self.passer_phase_nuit("sorciere")
 
 
     def action_chasseur(self, index_cible_chasseur):

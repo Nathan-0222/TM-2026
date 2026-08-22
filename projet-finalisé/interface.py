@@ -94,13 +94,6 @@ def page_jeu():
         #cupidon
         if partie_en_cours.phase == "cupidon":
 
-            cupidon_present = False
-            for j in partie_en_cours.liste_joueurs:
-                if j.carteatt.nom == "cupidon" and j.envie == True:
-                    cupidon_present = True
-
-            if cupidon_present == True:
-
                 ui.label('Cupidon se réveille. Choisissez les deux amoureux :')
                 champ_j1 = ui.number(label='Numéro du 1er joueur', value=1, min=1, max=len(partie_en_cours.liste_joueurs))
                 champ_j2 = ui.number(label='Numéro du 2ème joueur', value=1, min=1, max=len(partie_en_cours.liste_joueurs))
@@ -115,22 +108,16 @@ def page_jeu():
 
                 ui.button('Valider le couple', on_click=cliquer_cupidon)
 
-            else:
+            #else:   sert plus à rien vu que la partie vérifie automatiquement et s'il esst là il y aura forcément l'action
 
-                partie_en_cours.passer_phase_nuit("cupidon")
-                zone_message.refresh()
-                zone_actions.refresh()
+                #partie_en_cours.passer_phase_nuit("cupidon")
+                #zone_message.refresh()
+                #zone_actions.refresh()
 
 
         #voleur
         elif partie_en_cours.phase == "voleur":
-        
-            voleur_present = False
-            for j in partie_en_cours.liste_joueurs:
-                if j.carteatt.nom == "Voleur" and j.envie == True:
-                    voleur_present = True
-        
-            if voleur_present == True:
+                
                 ui.label("Le Voleur se réveille. Voulez-vous dérober la carte de quelqu'un ?")
                 champ_cible = ui.number(label="Numéro du joueur à cambrioler", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
         
@@ -149,22 +136,11 @@ def page_jeu():
         
                 ui.button("Oui, je vole !", on_click=cliquer_voleur_oui)
                 ui.button("Non, je reste tranquille", on_click=cliquer_voleur_non)
-        
-            else:
-                partie_en_cours.passer_phase_nuit("voleur")
-                zone_message.refresh()
-                zone_actions.refresh()
 
 
         #voyante
         elif partie_en_cours.phase == "voyante":
-        
-            voyante_presente = False
-            for j in partie_en_cours.liste_joueurs:
-                if j.carteatt.nom == "Voyante" and j.envie == True:
-                    voyante_presente = True
-        
-            if voyante_presente == True:
+
                 ui.label("La Voyante se réveille. Choisissez un joueur à observer :")
                 champ_cible = ui.number(label="Numéro du joueur à observer", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
         
@@ -176,11 +152,6 @@ def page_jeu():
                     zone_actions.refresh()
         
                 ui.button("Regarder", on_click=cliquer_voyante)
-        
-            else:
-                partie_en_cours.passer_phase_nuit("voyante")
-                zone_message.refresh()
-                zone_actions.refresh()
 
 
         #loup
@@ -239,12 +210,6 @@ def page_jeu():
 
                 ui.button("Valider", on_click=cliquer_sorciere)
 
-            else:
-                partie_en_cours.passer_phase_nuit("sorciere")
-                zone_message.refresh()
-                zone_actions.refresh()
-
-
 
         elif partie_en_cours.phase == "chasseur":
 
@@ -271,15 +236,16 @@ def page_jeu():
                 zone_actions.refresh()
                 return
 
-            def cliquer_passer_au_vote():
-                partie_en_cours.a_deja_vote = []
-                for j in partie_en_cours.liste_joueurs:
-                    j.nb_vote = 0
-                partie_en_cours.phase = "vote_jour"
-                partie_en_cours.message = "--- LE VILLAGE VOTE ---\nChaque joueur vivant vote pour éliminer un suspect."
-                zone_message.refresh()
-                zone_joueurs.refresh()
-                zone_actions.refresh()
+            else:
+                def cliquer_passer_au_vote():
+                    partie_en_cours.a_deja_vote = []
+                    for j in partie_en_cours.liste_joueurs:
+                        j.nb_vote = 0
+                    partie_en_cours.phase = "vote_jour"
+                    partie_en_cours.message = "--- LE VILLAGE VOTE ---\nChaque joueur vivant vote pour éliminer un suspect."
+                    zone_message.refresh()
+                    zone_joueurs.refresh()
+                    zone_actions.refresh()
 
             ui.button("Passer au vote du village →", on_click=cliquer_passer_au_vote)
 
@@ -321,4 +287,4 @@ def page_jeu():
     zone_actions()
 
 
-ui.run(title="Loup Garou", reload=False, port=8085)
+ui.run(title="Loup Garou", reload=False, port=8086)

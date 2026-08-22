@@ -8,11 +8,16 @@ class Partie:
         self.liste_joueurs = [] 
         self.loups_garous = []
         self.villageois = []
-        self.sorcière = None
-        self.petite_fille = None
 
         self.phase = "inscription"
         self.message = "Bonjour, inscrivez de 7 à 15 joueurs pour commencer !!"
+
+        self.a_cupidon = False   #rôle en booléens
+        self.a_voleur = False
+        self.a_voyante = False
+        self.a_sorciere = False
+        self.a_chasseur = False
+        self.a_petite_fille = False
 
         self.victime_loups = None
         self.sauve_par_sorciere = False
@@ -62,6 +67,20 @@ class Partie:
         self.message = "La composition de la partie est :\n"
         for carte in self.pioche:
             self.message = self.message + "-" + carte.nom + "\n"
+
+        for carte in self.pioche:
+            if carte.nom == "Cupidon":
+                self.a_cupidon = True
+            elif carte.nom == "Voleur":
+                self.a_voleur = True
+            elif carte.nom == "Voyante":
+                self.a_voyante = True
+            elif carte.nom == "Sorciere":
+                self.a_sorciere = True
+            elif carte.nom == "Chasseur":
+                self.a_chasseur = True
+            elif carte.nom == "Petite-Fille":
+                self.a_petite_fille = True
         
         random.shuffle (self.pioche)
 
@@ -74,21 +93,20 @@ class Partie:
     def commencer_partie(self):
 
         self.distribuer_cartes()
-        self.phase = "cupidon"
         self.première_nuit = True
         self.message = "Début de la partie \n --- LE VILLAGE S'ENDORT... ---"
+
+        if self.a_cupidon:
+            self.phase = "cupidon"
+        else:
+            self.passer_phase_nuit("cupidon")
 
 
     def passer_phase_nuit(self, phase_actuelle):
 
         if phase_actuelle == "cupidon":
 
-            voleur_present = False
-            for j in self.liste_joueurs:
-                if j.carteatt.nom == "Voleur" and j.envie == True:
-                    voleur_present = True
-
-            if voleur_present == True:
+            if self.a_voleur == True:
                 self.phase = "voleur"
                 self.message = "Cupidon se rendort... \nLe Voleur se réveille !!"
 
@@ -120,12 +138,12 @@ class Partie:
         
         if phase_actuelle == "loups":
         
-            sorcière_present = False
+            sorciere_present = False
             for j in self.liste_joueurs:
-                if j.carteatt.nom == "Sorcière" and (j.envie == True or j == self.victime_loups):
-                    sorcière_present = True
+                if j.carteatt.nom == "Sorciere" and (j.envie == True or j == self.victime_loups):
+                    sorciere_present = True
         
-            if sorcière_present == True:
+            if sorciere_present == True:
                 self.phase = "sorciere"
                 self.message = "Les Loups Garous se rendorment... \nLa Sorcière se réveille !!"
         
@@ -220,7 +238,11 @@ class Partie:
             self.message = self.message + "\nLe Chasseur a emporté " + cible.nom + "dans sa tombe !"
 
         if not self.vérification_victoire():
-            self.phase = self.prochaine_phase
+            if self.prochaine_phase == "matin":
+                self.phase = "matin"
+            else:
+                #Si mort au vote du village, permet de sauter le rôle de cupidon("que à la première nuit") -> je me dis que voleur chaque tour peut metttre plus de suspens
+                self.passer_phase_nuit("cupidon")
 
 
 
@@ -228,7 +250,7 @@ class Partie:
 
         morts_cette_nuit = []
 
-        if self.victime_loups != None and self.sauve_par_sorcière == False:
+        if self.victime_loups != None and self.sauve_par_sorciere == False:
             morts_cette_nuit.append(self.victime_loups)
 
         if self.victime_sorcière != None:
@@ -248,6 +270,11 @@ class Partie:
                     self.message = self.message + "Le joueur " + j.nom + " nous a quitté cette nuit, sa carte était : " + j.carteatt.nom + "\n"
                     if j.carteatt.nom == "Chasseur":
                         chasseur_mort = True
+
+
+        self.victime_loups = None
+        self.sauve_par_sorciere = False
+        self.victime_sorciere = None
 
         if self.vérification_victoire():
             return
@@ -321,24 +348,10 @@ class Partie:
                 return
         
             else:
-                voyante_presente = False
-                for j in self.liste_joueurs:
-                    if j.carteatt.nom == "Voyante" and j.envie == True:
-                        voyante_presente = True
-
-                if voyante_presente == True:
-                    phase_nuit = "voyante"
-                    self.message = self.message + "LA NUIT TOMBE... \nLa Voyante se réveille !!"
-                else:
-                    phase_nuit = "loups"
-                    self.a_deja_vote = []
-                    for j in self.liste_joueurs:
-                        j.nb_vote = 0
-                    self.message = self.message + "LA NUIT TOMBE... \nLes Loups-Garous se réveillent !!"
-
                 if self.liste_joueurs[index_max].carteatt.nom == "Chasseur":
                     self.phase = "chasseur"
-                    self.prochaine_phase = phase_nuit
+                    self.prochaine_phase = "nuit"
                     self.message = self.message + "\nLe Chasseur est mort et doit tirer !"
                 else:
-                    self.phase = phase_nuit
+                    self.message = self.message + "\nLA NUIT TOMBE..."
+                    self.passer_phase_nuit("cupidon")

@@ -133,7 +133,7 @@ class Partie:
             self.a_deja_vote = []
             for j in self.liste_joueurs:
                 j.nb_vote = 0
-            self.message = "La Voyante se rendort... \nLes Loups se réveillent pour choisir leur victime !!"
+            self.message = self.message + "\nLes Loups se réveillent pour choisir leur victime !!"
 
         
         if phase_actuelle == "loups":
@@ -216,17 +216,16 @@ class Partie:
             self.passer_phase_nuit("loups")
 
 
-    def action_sorciere(self, index_victime, choix_sorciere):
-
-        for j in self.liste_joueurs:
-            if j.carteatt.nom == "Sorcière" and (j.envie == True or j == self.victime_loups):
-                self.sauve_par_sorcière, self.victime_sorcière = j.carteatt.capacite_sorciere(self.liste_joueurs, index_victime, choix_sorciere)
-                if choix_sorciere == 1:
-                    self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
-                elif choix_sorciere == 2:
-                    self.message = "La Sorcière a utilisé sa potion de mort."
-                else:
-                    self.message = "La Sorcière n'a rien fait."
+def action_sorciere(self, choix_sorciere, index_cible_mort):
+    for j in self.liste_joueurs:
+        if j.carteatt.nom == "Sorciere" and (j.envie == True or j == self.victime_loups):
+            self.sauve_par_sorciere, self.victime_sorciere = j.carteatt.capacite_sorciere(index_cible_mort, self.liste_joueurs, choix_sorciere)
+            if choix_sorciere == 1:
+                self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
+            elif choix_sorciere == 2:
+                self.message = "La Sorcière a utilisé sa potion de mort."
+            else:
+                self.message = "La Sorcière n'a rien fait."
 
         self.passer_phase_nuit("sorciere")
 
@@ -253,8 +252,8 @@ class Partie:
         if self.victime_loups != None and self.sauve_par_sorciere == False:
             morts_cette_nuit.append(self.victime_loups)
 
-        if self.victime_sorcière != None:
-            morts_cette_nuit.append(self.victime_sorcière)
+        if self.victime_sorciere != None:
+            morts_cette_nuit.append(self.victime_sorciere)
 
         self.message = " LE SOLEIL SE LÈVE \nLe village se réveille...\n"
 
@@ -316,7 +315,7 @@ class Partie:
 
 
 
-    def vote_de_jour(self, nom_du_votant, index_cible):   #même système que vote_de_nuit
+    def vote_de_jour(self, index_cible, nom_du_votant):   #même système que vote_de_nuit
 
         self.liste_joueurs[index_cible].nb_vote += 1
         self.a_deja_vote.append(nom_du_votant)   #vote enregistré

@@ -217,7 +217,7 @@ def page_jeu():
             champ_cible = ui.number(label="Choisissez le numéro de votre cible :", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
 
             def tir_chasseur():
-                partie_en_cours.action_chasseur(champ_cible.value - 1)
+                partie_en_cours.action_chasseur(int(champ_cible.value) - 1)
                 zone_message.refresh()
                 zone_joueurs.refresh()
                 zone_actions.refresh()

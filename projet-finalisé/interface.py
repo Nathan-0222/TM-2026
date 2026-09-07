@@ -161,6 +161,8 @@ def page_jeu():
                 if j.carteatt.nom == "Petite-Fille" and j.envie == True:
                     ui.label("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
 
+
+            ui.label("Veuillez à vous mettre d'accord les Loups-Garous, si vous ne le faites pas le jeu déterminera au hasard entre vos choix la victime finale.")
             loup_actuel = None
             for j in partie_en_cours.liste_joueurs:
                 if j.carteatt.nom == "Loup-Garou" and j.envie == True:

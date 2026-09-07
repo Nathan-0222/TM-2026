@@ -111,7 +111,7 @@ class Partie:
                 self.message = "Cupidon se rendort... \nLe Voleur se réveille !!"
 
             else:
-                self.passer_phase_nuit("voleur")
+                phase_actuelle = "voleur"
 
         if phase_actuelle == "voleur":
         
@@ -125,7 +125,7 @@ class Partie:
                 self.message = "Le Voleur se rendort... \nLa Voyante se réveille !!"
                     
             else:
-                self.passer_phase_nuit("voyante")
+                phase_actuelle = "voyante"
 
         if phase_actuelle == "voyante":
         
@@ -148,7 +148,7 @@ class Partie:
                 self.message = "Les Loups Garous se rendorment... \nLa Sorcière se réveille !!"
         
             else:
-                self.passer_phase_nuit("sorciere")   #essai correction bug
+                phase_actuelle = "sorciere"  #essai correction bug
 
         if phase_actuelle == "sorciere":
         
@@ -202,12 +202,19 @@ class Partie:
 
         if loups_restants == 0:
  
-            index_max = 0
+            votes = []
             for i in range(len(self.liste_joueurs)):
-                if self.liste_joueurs[i].nb_vote > self.liste_joueurs[index_max].nb_vote:
-                    index_max = i
- 
-            self.victime_loups = self.liste_joueurs[index_max]
+                votes.append(j.nb_vote)
+
+            max_votes = max(votes)
+
+            #gérer les ex aequo  -> au hasard
+            en_tete = []
+            for i in range (len(self.liste_joueurs)):
+                if i.nb_vote == max_votes:
+                    en_tete.append(j)
+
+            self.victime_loups = random.choice(en_tete)
  
             for j in self.liste_joueurs:
                 j.nb_vote = 0   #compteur à 0 pour vote_jour
@@ -216,18 +223,18 @@ class Partie:
             self.passer_phase_nuit("loups")
 
 
-def action_sorciere(self, choix_sorciere, index_cible_mort):
-    for j in self.liste_joueurs:
-        if j.carteatt.nom == "Sorciere" and (j.envie == True or j == self.victime_loups):
-            self.sauve_par_sorciere, self.victime_sorciere = j.carteatt.capacite_sorciere(index_cible_mort, self.liste_joueurs, choix_sorciere)
-            if choix_sorciere == 1:
-                self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
-            elif choix_sorciere == 2:
-                self.message = "La Sorcière a utilisé sa potion de mort."
-            else:
-                self.message = "La Sorcière n'a rien fait."
+    def action_sorciere(self, choix_sorciere, index_cible_mort):
+        for j in self.liste_joueurs:
+            if j.carteatt.nom == "Sorciere" and (j.envie == True or j == self.victime_loups):
+                self.sauve_par_sorciere, self.victime_sorciere = j.carteatt.capacite_sorciere(index_cible_mort, self.liste_joueurs, choix_sorciere)
+                if choix_sorciere == 1:
+                    self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
+                elif choix_sorciere == 2:
+                    self.message = "La Sorcière a utilisé sa potion de mort."
+                else:
+                    self.message = "La Sorcière n'a rien fait."
 
-        self.passer_phase_nuit("sorciere")
+            self.passer_phase_nuit("sorciere")
 
 
     def action_chasseur(self, index_cible_chasseur):
@@ -327,16 +334,24 @@ def action_sorciere(self, choix_sorciere, index_cible_mort):
                     votants_restants += 1
         
         if votants_restants == 0:
-         
-            index_max = 0
-            for i in range(len(self.liste_joueurs)):
-                if self.liste_joueurs[i].nb_vote > self.liste_joueurs[index_max].nb_vote:
-                    index_max = i
 
-            
+            #meme méthode que dans vote de nuit
          
-            self.message = "Le joueur " + self.liste_joueurs[index_max].nom + " est mort par vote. Sa carte était : " + self.liste_joueurs[index_max].carteatt.nom
-            self.liste_joueurs[index_max].mourir()
+            votes = []
+            for i in range(len(self.liste_joueurs)):
+                votes.append(i.nb_vote)
+
+            max_votes = max(votes)
+
+            en_tete = []
+            for i in range (len(self.liste_joueurs)):
+                if i.nb_votes == max_votes:
+                    en_tete.append(i)
+
+            victime_village = random.choice(en_tete)
+
+            self.message = "Le joueur " + victime_village.nom + " est mort par vote. Sa carte était : " + victime_village.carteatt.nom
+            victime_village.mourir()
          
             for j in self.liste_joueurs:
                 j.nb_vote = 0   #compteur à 0 pour vote_jour
@@ -347,7 +362,7 @@ def action_sorciere(self, choix_sorciere, index_cible_mort):
                 return
         
             else:
-                if self.liste_joueurs[index_max].carteatt.nom == "Chasseur":
+                if victime_village.carteatt.nom == "Chasseur":
                     self.phase = "chasseur"
                     self.prochaine_phase = "nuit"
                     self.message = self.message + "\nLe Chasseur est mort et doit tirer !"

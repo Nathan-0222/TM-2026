@@ -199,18 +199,30 @@ def page_jeu():
                 ui.label("Il vous reste : " + str(potions.potion_vie) + " potion de vie et " + str(potions.potion_mort) + " potion de mort")
                 ui.label("Choisissez  1 = sauver la victime, 2 = tuer quelqu'un, 3 = ne rien faire")
 
-                champ_choix = ui.number(label="Votre choix (1, 2 ou 3)", value=3, min=1, max=3)
-                champ_cible_mort = ui.number(label="Si choix 2 : numéro du joueur à tuer", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
+                champ_cible_mort = ui.number(label="Si vous utilisez la potion de mort, choisissez le numéro de la personne que vous voulez tuer :", value=1, min=1, max=len(partie_en_cours.liste_joueurs))
 
-                def cliquer_sorciere():
-                    choix = int(champ_choix.value)
-                    index_cible_mort = int(champ_cible_mort.value) - 1
-                    partie_en_cours.action_sorciere(choix, index_cible_mort)
+                def cliquer_sauver():
+                    partie_en_cours.action_sorciere(1, 0)
                     zone_message.refresh()
                     zone_joueurs.refresh()
                     zone_actions.refresh()
 
-                ui.button("Valider", on_click=cliquer_sorciere)
+                def cliquer_tuer():
+                    index_cible_mort = int(champ_cible_mort.value) - 1
+                    partie_en_cours.action_sorciere(2, index_cible_mort)
+                    zone_message.refresh()
+                    zone_joueurs.refresh()
+                    zone_actions.refresh()
+
+                def cliquer_rien():
+                    partie_en_cours.action_sorciere(3, 0)
+                    zone_message.refresh()
+                    zone_joueurs.refresh()
+                    zone_actions.refresh()
+
+                ui.button("Sauver la victime", on_click=cliquer_sauver)
+                ui.button("Tuer un joueur", on_click=cliquer_tuer)
+                ui.button("Ne rien faire", on_click=cliquer_rien)
 
 
         elif partie_en_cours.phase == "chasseur":

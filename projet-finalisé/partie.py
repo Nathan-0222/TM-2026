@@ -203,15 +203,15 @@ class Partie:
         if loups_restants == 0:
  
             votes = []
-            for i in range(len(self.liste_joueurs)):
+            for j in self.liste_joueurs:
                 votes.append(j.nb_vote)
 
             max_votes = max(votes)
 
             #gérer les ex aequo  -> au hasard
             en_tete = []
-            for i in range (len(self.liste_joueurs)):
-                if i.nb_vote == max_votes:
+            for j in self.liste_joueurs:
+                if j.nb_vote == max_votes:
                     en_tete.append(j)
 
             self.victime_loups = random.choice(en_tete)
@@ -338,13 +338,13 @@ class Partie:
             #meme méthode que dans vote de nuit
          
             votes = []
-            for i in range(len(self.liste_joueurs)):
+            for i in self.liste_joueurs:
                 votes.append(i.nb_vote)
 
             max_votes = max(votes)
 
             en_tete = []
-            for i in range (len(self.liste_joueurs)):
+            for i in self.liste_joueurs:
                 if i.nb_votes == max_votes:
                     en_tete.append(i)
 

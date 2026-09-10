@@ -114,15 +114,17 @@ class Partie:
                 phase_actuelle = "voleur"
 
         if phase_actuelle == "voleur":
-        
-            voyante_present = False
+
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Voyante" and j.envie == True:
-                    voyante_present = True
+                    self.a_voyante = True
                     
-            if voyante_present == True:
+            if self.a_voyante == True:
                 self.phase = "voyante"
-                self.message = "Le Voleur se rendort... \nLa Voyante se réveille !!"
+                if self.a_voleur == True:
+                    self.message = "Le Voleur se rendort... \nLa Voyante se réveille !!"
+                else:
+                    self.message = "La Voyante se réveille !!"
                     
             else:
                 phase_actuelle = "voyante"

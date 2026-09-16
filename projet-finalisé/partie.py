@@ -231,12 +231,13 @@ class Partie:
                 self.sauve_par_sorciere, self.victime_sorciere = j.carteatt.capacite_sorciere(index_cible_mort, self.liste_joueurs, choix_sorciere)
                 if choix_sorciere == 1:
                     self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
+                    self.sauve_par_sorciere = True
                 elif choix_sorciere == 2:
                     self.message = "La Sorcière a utilisé sa potion de mort."
                 else:
                     self.message = "La Sorcière n'a rien fait."
 
-            self.passer_phase_nuit("sorciere")
+        self.passer_phase_nuit("sorciere")   #problème de tabulation qui avait fait bugué résolution nuit
 
 
     def action_chasseur(self, index_cible_chasseur):
@@ -279,8 +280,6 @@ class Partie:
                     if j.carteatt.nom == "Chasseur":
                         chasseur_mort = True
 
-
-        self.victime_loups = None
         self.sauve_par_sorciere = False
         self.victime_sorciere = None
 
@@ -347,7 +346,7 @@ class Partie:
 
             en_tete = []
             for i in self.liste_joueurs:
-                if i.nb_votes == max_votes:
+                if i.nb_vote == max_votes:   #self.nb_vote et pas self.nb_votes   mal écrit
                     en_tete.append(i)
 
             victime_village = random.choice(en_tete)

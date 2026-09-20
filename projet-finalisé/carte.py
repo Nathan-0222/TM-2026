@@ -89,7 +89,7 @@ class Voyante(Carte):
     def capacite_voyante(self, liste_joueurs, index_joueur):
 
         carte_de_la_cible = liste_joueurs[index_joueur].carteatt.nom
-        return f"La carte de {liste_joueurs[index_joueur].nom} est : {carte_de_la_cible}/n"
+        return f"La carte de {liste_joueurs[index_joueur].nom} est : {carte_de_la_cible}  -- "
     
 
 class PetiteFille(Carte):

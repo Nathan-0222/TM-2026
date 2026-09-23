@@ -60,13 +60,33 @@ def page_acceuil():
 
 
 @ui.page('/jeu')
-def page_jeu():
+def page_liens():
 
     if partie_en_cours.phase == "inscription":
         ui.navigate.to('/')
         return
 
     ui.label('Jeu du Loup Garou')
+    ui.separator()
+    ui.label('Chaque joueur doit cliquer sur son nom pour ouvrir sa fenêtre privée !!')
+
+    for i in range(len(partie_en_cours.liste_joueurs)):
+        nom_j = partie_en_cours.liste_joueurs[i].nom
+        ui.button(nom_j, on_click=lambda i=i: ui.navigate.to(f'/joueur/{i}', new_tab = True))
+
+
+
+@ui.page('/joueur/{id_joueur}')
+def page_joueur(id_joueur: int):
+
+    if partie_en_cours.phase == "inscription":
+        ui.navigate.to('/')
+        return
+
+    joueur_actuel = partie_en_cours.liste_joueurs[id_joueur]
+
+    ui.label('Fenêtre de : ' + joueur_actuel.nom)
+    ui.label('Votre carte est : ' + joueur_actuel.carteatt.nom)
     ui.separator()
 
 
@@ -129,10 +149,22 @@ def page_jeu():
             zone_message.refresh()
             zone_actions.refresh()
 
+        est_mon_tour = ((partie_en_cours.phase == "cupidon" and joueur_actuel.carteatt.nom == "Cupidon") or
+                    (partie_en_cours.phase == "voleur" and joueur_actuel.carteatt.nom == "Voleur") or
+                    (partie_en_cours.phase == "voyante" and joueur_actuel.carteatt.nom == "Voyante") or
+                    (partie_en_cours.phase == "loups" and joueur_actuel.carteatt.nom == "Loup-Garou") or
+                    (partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere") or
+                    (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur") or
+                    (partie_en_cours.phase == "vote_jour" and joueur_actuel.nom not in partie_en_cours.a_deja_vote))
+
                 
         for j in range(len(partie_en_cours.liste_joueurs)):
             if partie_en_cours.liste_joueurs[j].envie == True:
-                ui.button(partie_en_cours.liste_joueurs[j].nom, on_click = lambda j=j :cliquer_cible(j)).props('color="positive"')   #si je mets pas i=i, vu que boucle sera fini, le i pointera forcément la dernière valeur de i qui est le dernier joueur de la liste
+                bouton = ui.button(partie_en_cours.liste_joueurs[j].nom, on_click = lambda j=j :cliquer_cible(j)).props('color="positive"')   #si je mets pas i=i, vu que boucle sera fini, le i pointera forcément la dernière valeur de i qui est le dernier joueur de la liste
+
+                if est_mon_tour == False:
+                    bouton.props('color="red').disable()
+
             else:
                 ui.button(partie_en_cours.liste_joueurs[j].nom + " (Mort)").props('color="gray"').disable()
 
@@ -144,84 +176,67 @@ def page_jeu():
 
 
         #cupidon
-        if partie_en_cours.phase == "cupidon":
+        if partie_en_cours.phase == "cupidon" and joueur_actuel.carteatt.nom == "Cupidon":
 
                 ui.label('Cupidon se réveille. Choisissez les deux amoureux :')
 
 
         #voleur
-        elif partie_en_cours.phase == "voleur":
+        elif partie_en_cours.phase == "voleur" and joueur_actuel.carteatt.nom == "Voleur":
                 
-                ui.label("Le Voleur se réveille. Voulez-vous dérober la carte de quelqu'un ? (cliquez sur un joueur pour dérober sa carte)")
+            ui.label("Le Voleur se réveille. Voulez-vous dérober la carte de quelqu'un ? (cliquez sur un joueur pour dérober sa carte)")
         
-                def cliquer_voleur_non():
-                    partie_en_cours.action_voleur(False, 0)
-                    zone_message.refresh()
-                    zone_joueurs.refresh()
-                    zone_actions.refresh()
+            def cliquer_voleur_non():
+                partie_en_cours.action_voleur(False, 0)
+                zone_message.refresh()
+                zone_joueurs.refresh()
+                zone_actions.refresh()
 
-                ui.button("Non, je reste tranquille", on_click=cliquer_voleur_non)
+            ui.button("Non, je reste tranquille", on_click=cliquer_voleur_non)
 
 
         #voyante
-        elif partie_en_cours.phase == "voyante":
+        elif partie_en_cours.phase == "voyante" and joueur_actuel.carteatt.nom == "Voyante":
 
-                ui.label("La Voyante se réveille. Choisissez un joueur à observer :")
+            ui.label("La Voyante se réveille. Choisissez un joueur à observer :")
 
 
         #loup
         elif partie_en_cours.phase == "loups":
-
-            for j in partie_en_cours.liste_joueurs:
-                if j.carteatt.nom == "Petite-Fille" and j.envie == True:
-                    ui.label("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
+            if joueur_actuel.carteatt.nom == "Petite-Fille" and joueur_actuel.envie == True:
+                ui.label("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
 
 
             ui.label("Veuillez à vous mettre d'accord les Loups-Garous, si vous ne le faites pas le jeu déterminera au hasard entre vos choix la victime finale.")
-            loup_actuel = None
-            for j in partie_en_cours.liste_joueurs:
-                if j.carteatt.nom == "Loup-Garou" and j.envie == True:
-                    if j.nom not in partie_en_cours.a_deja_vote:
-                        loup_actuel = j
-                        break
-
-            if loup_actuel != None:
-                ui.label("C'est au tour de " + loup_actuel.nom + " (Loup-Garou) de voter :")
+            if joueur_actuel.carteatt.nom == "Loup-Garou" and joueur_actuel.envie == True:
+                if joueur_actuel.nom not in partie_en_cours.a_deja_vote:
+                    ui.label("C'est au tour de " + joueur_actuel.nom + " (Loup-Garou) de voter :")
 
 
         #sorciere
-        elif partie_en_cours.phase == "sorciere":
+        elif partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorcière":
+            ui.label("La Sorcière se réveille.")
+            if partie_en_cours.victime_loups != None:
+                ui.label("Les loups ont choisi : " + partie_en_cours.victime_loups.nom)
+            ui.label("Il vous reste : " + str(joueur_actuel.carteatt.potion_vie) + " potion de vie et " + str(joueur_actuel.carteatt.potion_mort) + " potion de mort")
 
-            potions = None   
-            for j in partie_en_cours.liste_joueurs:
-                if j.carteatt.nom == "Sorciere" and (j.envie == True or j == partie_en_cours.victime_loups):
-                    potions = j.carteatt
+            def cliquer_sauver():
+                partie_en_cours.action_sorciere(1, 0)
+                zone_message.refresh()
+                zone_joueurs.refresh()
+                zone_actions.refresh()
 
-            if potions != None:   #joue pas si pas de potion
-                ui.label("La Sorcière se réveille.")
-                if partie_en_cours.victime_loups != None:
-                    ui.label("Les loups ont choisi : " + partie_en_cours.victime_loups.nom)
-                ui.label("Il vous reste : " + str(potions.potion_vie) + " potion de vie et " + str(potions.potion_mort) + " potion de mort")
-                ui.label("Choisissez  1 = sauver la victime, 2 = tuer quelqu'un, 3 = ne rien faire")
+            def cliquer_rien():
+                partie_en_cours.action_sorciere(3, 0)
+                zone_message.refresh()
+                zone_joueurs.refresh()
+                zone_actions.refresh()
 
-                def cliquer_sauver():
-                    partie_en_cours.action_sorciere(1, 0)
-                    zone_message.refresh()
-                    zone_joueurs.refresh()
-                    zone_actions.refresh()
-
-                def cliquer_rien():
-                    partie_en_cours.action_sorciere(3, 0)
-                    zone_message.refresh()
-                    zone_joueurs.refresh()
-                    zone_actions.refresh()
-
-                ui.button("Sauver la victime", on_click=cliquer_sauver)
-                ui.button("Ne rien faire", on_click=cliquer_rien)
+            ui.button("Sauver la victime", on_click=cliquer_sauver)
+            ui.button("Ne rien faire", on_click=cliquer_rien)
 
 
-        elif partie_en_cours.phase == "chasseur":
-
+        elif partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur":
             ui.label("Le Chasseur tire sa dernière balle ! Choisissez sa cible :")
 
 
@@ -252,15 +267,8 @@ def page_jeu():
 
         #vote matin
         elif partie_en_cours.phase == "vote_jour":
-
-            votant_actuel = None
-            for j in partie_en_cours.liste_joueurs:
-                if j.envie == True and j.nom not in partie_en_cours.a_deja_vote:
-                    votant_actuel = j
-                    break
-
-            if votant_actuel != None:
-                ui.label("C'est au tour de " + votant_actuel.nom + " de voter :")
+            if joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote:
+                ui.label("C'est au tour de " + joueur_actuel.nom + " de voter :")
 
 
         #fin potentiel

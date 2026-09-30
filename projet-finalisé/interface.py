@@ -1,5 +1,6 @@
-from nicegui import ui
+from nicegui import ui, app
 from partie import *
+app.add_static_files('/image', 'image')
 
 partie_en_cours = Partie("ciao")
 
@@ -87,6 +88,7 @@ def page_joueur(id_joueur: int):
 
     ui.label('Fenêtre de : ' + joueur_actuel.nom)
     ui.label('Votre carte est : ' + joueur_actuel.carteatt.nom)
+    ui.image(f'/image/{joueur_actuel.carteatt.nom}.webp').classes('w-30')
     ui.separator()
 
 
@@ -163,7 +165,7 @@ def page_joueur(id_joueur: int):
                 bouton = ui.button(partie_en_cours.liste_joueurs[j].nom, on_click = lambda j=j :cliquer_cible(j)).props('color="positive"')   #si je mets pas i=i, vu que boucle sera fini, le i pointera forcément la dernière valeur de i qui est le dernier joueur de la liste
 
                 if est_mon_tour == False:
-                    bouton.props('color="red').disable()
+                    bouton.props('color="red"').disable()
 
             else:
                 ui.button(partie_en_cours.liste_joueurs[j].nom + " (Mort)").props('color="gray"').disable()
@@ -178,7 +180,7 @@ def page_joueur(id_joueur: int):
         #cupidon
         if partie_en_cours.phase == "cupidon" and joueur_actuel.carteatt.nom == "Cupidon":
 
-                ui.label('Cupidon se réveille. Choisissez les deux amoureux :')
+            ui.label('Choisissez les deux amoureux :')
 
 
         #voleur

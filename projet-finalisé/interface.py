@@ -137,9 +137,7 @@ def page_joueur(id_joueur: int):
                 if joueur_actuel.nom not in partie_en_cours.a_deja_vote:
                     partie_en_cours.vote_de_jour(index_cible, joueur_actuel.nom)
 
-            zone_joueurs.refresh()
-            zone_message.refresh()
-            zone_actions.refresh()
+            tout_rafraichir()
 
         est_mon_tour = ((partie_en_cours.phase == "cupidon" and joueur_actuel.carteatt.nom == "Cupidon") or
                     (partie_en_cours.phase == "voleur" and joueur_actuel.carteatt.nom == "Voleur") or
@@ -148,17 +146,18 @@ def page_joueur(id_joueur: int):
                     (partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere") or
                     (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur") or
                     (partie_en_cours.phase == "vote_jour" and joueur_actuel.nom not in partie_en_cours.a_deja_vote))
+        
 
-                
-        for j in range(len(partie_en_cours.liste_joueurs)):
-            if partie_en_cours.liste_joueurs[j].envie == True:
-                bouton = ui.button(partie_en_cours.liste_joueurs[j].nom, on_click = lambda j=j :cliquer_cible(j)).props('color="positive"')   #si je mets pas i=i, vu que boucle sera fini, le i pointera forcément la dernière valeur de i qui est le dernier joueur de la liste
+        with ui.row():   #permet de mettre boutons en ligne et pas en colonne
+            for j in range(len(partie_en_cours.liste_joueurs)):
+                if partie_en_cours.liste_joueurs[j].envie == True:
+                    bouton = ui.button(partie_en_cours.liste_joueurs[j].nom, on_click = lambda j=j :cliquer_cible(j)).props('color="positive"')   #si je mets pas i=i, vu que boucle sera fini, le i pointera forcément la dernière valeur de i qui est le dernier joueur de la liste
 
-                if est_mon_tour == False:
-                    bouton.props('color="red"').disable()
+                    if est_mon_tour == False:
+                        bouton.props('color="red"').disable()
 
-            else:
-                ui.button(partie_en_cours.liste_joueurs[j].nom + " (Mort)").props('color="gray"').disable()
+                else:
+                    ui.button(partie_en_cours.liste_joueurs[j].nom + " (Mort)").props('color="gray"').disable()
 
 
 
@@ -180,9 +179,7 @@ def page_joueur(id_joueur: int):
         
             def cliquer_voleur_non():
                 partie_en_cours.action_voleur(False, 0)
-                zone_message.refresh()
-                zone_joueurs.refresh()
-                zone_actions.refresh()
+                tout_rafraichir()
 
             ui.button("Non, je reste tranquille", on_click=cliquer_voleur_non)
 
@@ -214,15 +211,11 @@ def page_joueur(id_joueur: int):
 
             def cliquer_sauver():
                 partie_en_cours.action_sorciere(1, 0)
-                zone_message.refresh()
-                zone_joueurs.refresh()
-                zone_actions.refresh()
+                tout_rafraichir()
 
             def cliquer_rien():
                 partie_en_cours.action_sorciere(3, 0)
-                zone_message.refresh()
-                zone_joueurs.refresh()
-                zone_actions.refresh()
+                tout_rafraichir()
 
             ui.button("Sauver la victime", on_click=cliquer_sauver)
             ui.button("Ne rien faire", on_click=cliquer_rien)
@@ -238,9 +231,7 @@ def page_joueur(id_joueur: int):
 
             ui.label('--- LE VILLAGE SE REVEILLE ---')
             if partie_en_cours.vérification_victoire():
-                zone_message.refresh()
-                zone_joueurs.refresh()
-                zone_actions.refresh()
+                tout_rafraichir()
                 return
 
             else:
@@ -250,9 +241,7 @@ def page_joueur(id_joueur: int):
                         j.nb_vote = 0
                     partie_en_cours.phase = "vote_jour"
                     partie_en_cours.message = "--- LE VILLAGE VOTE ---\nChaque joueur vivant vote pour éliminer un suspect."
-                    zone_message.refresh()
-                    zone_joueurs.refresh()
-                    zone_actions.refresh()
+                    tout_rafraichir()
 
             ui.button("Passer au vote du village →", on_click=cliquer_passer_au_vote)
 
@@ -270,11 +259,51 @@ def page_joueur(id_joueur: int):
             ui.button("Retour à l'accueil", on_click=lambda: ui.navigate.to('/'))
 
 
+    def tout_rafraichir():
+        zone_message.refresh()
+        zone_actions.refresh()
+        zone_joueurs.refresh()
+
+
+
     zone_message()
     ui.separator()
     zone_joueurs()
     ui.separator()
     zone_actions()
+
+    dernier_etat = {   #inspirer du modèle pour raffraîchir les pages des différents joueurs dans le fichier app3.py de la prof
+        "phase" : partie_en_cours.phase,
+        "messages" : partie_en_cours.message,
+        "nb_morts" : 0,
+        "nb_votes" : len(partie_en_cours.a_deja_vote)
+    }
+
+    def verifier_changements():
+
+        nb_morts = 0
+        for j in partie_en_cours.liste_joueurs:
+            if j.envie == False:
+                nb_morts += 1
+
+        etat_actuel = {
+            "phase" : partie_en_cours.phase,
+            "messages" : partie_en_cours.message,
+            "nb_morts" : nb_morts,
+            "nb_votes" : len(partie_en_cours.a_deja_vote)
+        }
+
+        if etat_actuel["messages"] != dernier_etat["messages"]:
+            zone_message.refresh()
+
+        if (etat_actuel["phase"] != dernier_etat["phase"] or etat_actuel["nb_votes"] != dernier_etat["nb_votes"] or etat_actuel["nb_morts"] != dernier_etat["nb_morts"]):
+            zone_joueurs.refresh()
+            zone_actions.refresh()
+
+        dernier_etat.update(etat_actuel)
+
+    ui.timer(0.5, verifier_changements)
+
 
 
 ui.run(title="Loup Garou", reload=False, port=8086)

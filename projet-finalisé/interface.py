@@ -1,6 +1,9 @@
+from pathlib import Path   #sert pour les images -> ou est ce qu'on peut les trouver
 from nicegui import ui, app
 from partie import *
-app.add_static_files('/image', 'image')
+
+dossier_images = Path(__file__).parent / 'image'   #indique chemin d'accès depuis l'endroit que lance le terminal initialement
+app.add_static_files('/image', dossier_images)
 
 partie_en_cours = Partie("ciao")
 
@@ -121,15 +124,8 @@ def page_joueur(id_joueur: int):
                 partie_en_cours.action_voyante(index_cible)
 
             elif partie_en_cours.phase == "loups":
-                loup_actuel = None
-                for j in partie_en_cours.liste_joueurs:
-                    if j.carteatt.nom == "Loup-Garou" and j.envie == True:
-                        if j.nom not in partie_en_cours.a_deja_vote:
-                            loup_actuel = j
-                            break
-
-                if loup_actuel != None:
-                    partie_en_cours.vote_de_nuit(index_cible, loup_actuel.nom)
+                if joueur_actuel.nom not in partie_en_cours.a_deja_vote:
+                    partie_en_cours.vote_de_nuit(index_cible, joueur_actuel.nom)
 
             elif partie_en_cours.phase == "sorciere":
                 partie_en_cours.action_sorciere(2, index_cible)
@@ -138,14 +134,8 @@ def page_joueur(id_joueur: int):
                 partie_en_cours.action_chasseur(index_cible)  
 
             elif partie_en_cours.phase == "vote_jour":
-                votant_actuel = None
-                for j in partie_en_cours.liste_joueurs:
-                    if j.envie == True and j.nom not in partie_en_cours.a_deja_vote:
-                        votant_actuel = j
-                        break
-
-                if votant_actuel != None:
-                    partie_en_cours.vote_de_jour(index_cible, votant_actuel.nom)
+                if joueur_actuel.nom not in partie_en_cours.a_deja_vote:
+                    partie_en_cours.vote_de_jour(index_cible, joueur_actuel.nom)
 
             zone_joueurs.refresh()
             zone_message.refresh()
@@ -154,7 +144,7 @@ def page_joueur(id_joueur: int):
         est_mon_tour = ((partie_en_cours.phase == "cupidon" and joueur_actuel.carteatt.nom == "Cupidon") or
                     (partie_en_cours.phase == "voleur" and joueur_actuel.carteatt.nom == "Voleur") or
                     (partie_en_cours.phase == "voyante" and joueur_actuel.carteatt.nom == "Voyante") or
-                    (partie_en_cours.phase == "loups" and joueur_actuel.carteatt.nom == "Loup-Garou") or
+                    (partie_en_cours.phase == "loups" and joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.nom not in partie_en_cours.a_deja_vote ) or
                     (partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere") or
                     (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur") or
                     (partie_en_cours.phase == "vote_jour" and joueur_actuel.nom not in partie_en_cours.a_deja_vote))
@@ -205,18 +195,18 @@ def page_joueur(id_joueur: int):
 
         #loup
         elif partie_en_cours.phase == "loups":
-            if joueur_actuel.carteatt.nom == "Petite-Fille" and joueur_actuel.envie == True:
+            if joueur_actuel.carteatt.nom == "PetiteFille" and joueur_actuel.envie == True:
                 ui.label("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
 
 
             ui.label("Veuillez à vous mettre d'accord les Loups-Garous, si vous ne le faites pas le jeu déterminera au hasard entre vos choix la victime finale.")
-            if joueur_actuel.carteatt.nom == "Loup-Garou" and joueur_actuel.envie == True:
+            if joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.envie == True:
                 if joueur_actuel.nom not in partie_en_cours.a_deja_vote:
                     ui.label("C'est au tour de " + joueur_actuel.nom + " (Loup-Garou) de voter :")
 
 
         #sorciere
-        elif partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorcière":
+        elif partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere":
             ui.label("La Sorcière se réveille.")
             if partie_en_cours.victime_loups != None:
                 ui.label("Les loups ont choisi : " + partie_en_cours.victime_loups.nom)

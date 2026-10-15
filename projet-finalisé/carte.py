@@ -58,7 +58,7 @@ class Sorciere(Carte):
         
 class LoupGarou(Carte):
     def __init__(self):
-        self.nom="Loup-Garou"
+        self.nom="LoupGarou"
         self.description="La capacité de votre carte est que, avec vos coéquipiers durant la nuit, vous pouvez en vous mettant d'accord tuer un joueur. Votre but est que vous soyez les derniers survivants !!!"
     
     def capacite_loupgarou(self):
@@ -94,7 +94,7 @@ class Voyante(Carte):
 
 class PetiteFille(Carte):
     def __init__(self):
-            self.nom="Petite-Fille" 
+            self.nom="PetiteFille" 
             self.description="La capacité de votre carte est que, lors du tour des loups garous uniquement, vous pouvez tricher en les observant discrètement en ouvrant vos yeux. Faites attention à ne pas être repéré, car vous risqueriez de..."
 
 

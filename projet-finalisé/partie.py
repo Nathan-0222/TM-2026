@@ -79,7 +79,7 @@ class Partie:
                 self.a_sorciere = True
             elif carte.nom == "Chasseur":
                 self.a_chasseur = True
-            elif carte.nom == "Petite-Fille":
+            elif carte.nom == "PetiteFille":
                 self.a_petite_fille = True
         
         random.shuffle (self.pioche)
@@ -198,7 +198,7 @@ class Partie:
  
         loups_restants = 0   #je ferai dans interface.py en sorte que quand un loup a voté, tant que loups restants n'est pas egal à 0, le loup suivant votera
         for j in self.liste_joueurs:
-            if j.carteatt.nom == "Loup-Garou" and j.envie == True:
+            if j.carteatt.nom == "LoupGarou" and j.envie == True:
                 if j.nom not in self.a_deja_vote:
                     loups_restants += 1
 
@@ -303,7 +303,7 @@ class Partie:
         villageois = 0
         for j in self.liste_joueurs:
             if j.envie == True:
-                if j.carteatt.nom == "Loup-Garou":
+                if j.carteatt.nom == "LoupGarou":
                     loups += 1
                 else:
                     villageois += 1

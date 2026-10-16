@@ -28,12 +28,18 @@ class Partie:
         self.prochaine_phase = "matin"   #chasseur
 
     def ajouter_joueur(self, nom_joueur):
+
+        for j in self.liste_joueurs:   #Encore petit détail : Empêcher deux mêmes noms dans partie. Le lower() sert donc à identifier tous les noms de la même façcon, sans ca un Nathan ne serait pas le même nom que un nathan
+            if j.nom.lower() == nom_joueur.lower():
+                return False
             
         nouveau_joueur = Joueur(nom_joueur, None) 
         self.liste_joueurs.append(nouveau_joueur)
         self.message = f"{nom_joueur} a rejoint la partie !!"
+        return True
 
     def distribuer_cartes (self):
+
         self.nombre = len(self.liste_joueurs)
         self.pioche = []
 

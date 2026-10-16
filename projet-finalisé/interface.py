@@ -27,8 +27,8 @@ def page_acceuil():
 
     @ui.refreshable
     def zone_bouton_commencer():
-        if len(partie_en_cours.liste_joueurs) >= 7 and len(partie_en_cours.liste_joueurs) < 15:
-
+        nb = len(partie_en_cours.liste_joueurs)
+        if nb >= 7:   #Petit détail encore, tant que plus grand que 7 bouton commencer tojours affichable, mais dès que + que 15 joueurs impossible d'ajjouter nouveau joueur (boutons non visibles)
             def cliquer_commencer():
                 partie_en_cours.commencer_partie()
                 ui.navigate.to('/jeu')
@@ -47,9 +47,15 @@ def page_acceuil():
     def cliquer_ajouter():
         nom = champ_nom.value
         if nom == "":
+            ui.notify('Entrez un nom', type="warning")
             return
         
-        if len(partie_en_cours.liste_joueurs) > 15:
+        if len(partie_en_cours.liste_joueurs) >= 15:   #Petit changement, avant cela autorisait jusqu'à 16 joueurs (> et pas >=)
+            ui.notify('Maximum 15 joueurs !!', type='warning')
+            return
+
+        if partie_en_cours.ajouter_joueur(nom) == False:   #Petit détail encore, notification si nom déja pris (lié avec la fonction ajouter joueur dans partie.py)
+            ui.notify('Ce nom est déjà pris !', type='negative')
             return
 
         partie_en_cours.ajouter_joueur(nom)
@@ -88,6 +94,7 @@ def page_joueur(id_joueur: int):
         return
 
     joueur_actuel = partie_en_cours.liste_joueurs[id_joueur]
+    choix_cupidon = []
 
     ui.label('Fenêtre de : ' + joueur_actuel.nom)
     ui.label('Votre carte est : ' + joueur_actuel.carteatt.nom)
@@ -109,17 +116,22 @@ def page_joueur(id_joueur: int):
 
         ui.label("Voiçi la liste des joueurs, cliquez dessus quand c'est à votre tour pour cibler :")
 
-        choix_cupidon = []
 
         def cliquer_cible(index_cible):
 
             if partie_en_cours.phase == "cupidon":
+                if index_cible in choix_cupidon:   #Permet que cupidon ne puisse pas définir deux fois le même amoureux
+                    ui.notify('Choisissez deux joueurs différents !', type='warning')
+                    return
                 choix_cupidon.append(index_cible)
                 if len(choix_cupidon) == 2:
                     partie_en_cours.action_cupidon(choix_cupidon[0], choix_cupidon[1])
                     choix_cupidon.clear()   #vider liste
 
             elif partie_en_cours.phase == "voleur":
+                if partie_en_cours.liste_joueurs[index_cible] is joueur_actuel:   #Voleur ne peut pas se voler lui-même
+                    ui.notify('Vous ne pouvez pas vous voler vous-même !', type='warning')
+                    return
                 partie_en_cours.action_voleur(True, index_cible)
 
             elif partie_en_cours.phase == "voyante":

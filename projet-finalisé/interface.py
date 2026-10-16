@@ -98,6 +98,8 @@ def page_joueur(id_joueur: int):
     @ui.refreshable
     def zone_message():
         ui.label(partie_en_cours.message)   #zone qui remplace print(message jeu)
+        if joueur_actuel.carteatt.message_prive != "":
+            ui.label("Message privé : " + joueur_actuel.carteatt.message_prive)
 
 
     @ui.refreshable
@@ -276,7 +278,8 @@ def page_joueur(id_joueur: int):
         "phase" : partie_en_cours.phase,
         "messages" : partie_en_cours.message,
         "nb_morts" : 0,
-        "nb_votes" : len(partie_en_cours.a_deja_vote)
+        "nb_votes" : len(partie_en_cours.a_deja_vote),
+        "prive" : joueur_actuel.carteatt.message_prive 
     }
 
     def verifier_changements():
@@ -290,10 +293,11 @@ def page_joueur(id_joueur: int):
             "phase" : partie_en_cours.phase,
             "messages" : partie_en_cours.message,
             "nb_morts" : nb_morts,
-            "nb_votes" : len(partie_en_cours.a_deja_vote)
+            "nb_votes" : len(partie_en_cours.a_deja_vote),
+            "prive" : joueur_actuel.carteatt.message_prive
         }
 
-        if etat_actuel["messages"] != dernier_etat["messages"]:
+        if (etat_actuel["messages"] != dernier_etat["messages"]) or (etat_actuel["prive"] != dernier_etat["prive"]) :
             zone_message.refresh()
 
         if (etat_actuel["phase"] != dernier_etat["phase"] or etat_actuel["nb_votes"] != dernier_etat["nb_votes"] or etat_actuel["nb_morts"] != dernier_etat["nb_morts"]):

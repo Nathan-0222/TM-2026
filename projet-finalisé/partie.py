@@ -173,10 +173,6 @@ class Partie:
         for j in self.liste_joueurs:
             if j.carteatt.nom == "Voleur" and j.envie == True:
                 j.carteatt.capacite_voleur(self.liste_joueurs, choix_voleur, index_cible_voleur)
-                if choix_voleur == True:
-                    self.message = "Le voleur a bien dérobé la carte de quelqu'un cette nuit !"
-                else:
-                    self.message = "Le voleur a décidé de rester tranquillement chez lui cette nuit."
 
         self.passer_phase_nuit("voleur")
 
@@ -185,8 +181,7 @@ class Partie:
         
         for j in self.liste_joueurs:
             if j.carteatt.nom == "Voyante" and j.envie == True:
-                j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
-                self.message = j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
+                j.carteatt.message_prive = j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
         
         self.passer_phase_nuit("voyante")
 
@@ -226,21 +221,29 @@ class Partie:
 
 
     def action_sorciere(self, choix_sorciere, index_cible_mort):
+
         for j in self.liste_joueurs:
             if j.carteatt.nom == "Sorciere" and (j.envie == True or j == self.victime_loups):
                 self.sauve_par_sorciere, self.victime_sorciere = j.carteatt.capacite_sorciere(index_cible_mort, self.liste_joueurs, choix_sorciere)
+
                 if choix_sorciere == 1:
-                    self.message = "Vous avez choisi de sauver " + self.victime_loups.nom + "."
-                    self.sauve_par_sorciere = True
+                    if self.sauve_par_sorciere == True:
+                        j.carteatt.message_prive = "Tu as sauvé " + self.victime_loups.nom + "."
+                    else:
+                        j.carteatt.message_prive = "Tu n'as plus de potion de vie."
                 elif choix_sorciere == 2:
-                    self.message = "La Sorcière a utilisé sa potion de mort."
+                    if self.victime_sorciere != None:
+                        j.carteatt.message_prive = "Tu as empoisonné " + self.victime_sorciere.nom + "."
+                    else:
+                        j.carteatt.message_prive = "Tu n'as plus de potion de mort."
                 else:
-                    self.message = "La Sorcière n'a rien fait."
+                    j.carteatt.message_prive = "Tu n'as rien fait cette nuit."
 
         self.passer_phase_nuit("sorciere")   #problème de tabulation qui avait fait bugué résolution nuit
 
 
     def action_chasseur(self, index_cible_chasseur):
+
         cible = self.liste_joueurs[index_cible_chasseur]
         if cible.envie == True:
             cible.mourir()
@@ -368,5 +371,7 @@ class Partie:
                     self.prochaine_phase = "nuit"
                     self.message = self.message + "\nLe Chasseur est mort et doit tirer !"
                 else:
+                    for j in self.liste_joueurs:   #reinitialise les messages prive de chaque joueur
+                        j.carteatt.message_prive = ""
                     self.message = self.message + "\nLA NUIT TOMBE..."
                     self.passer_phase_nuit("cupidon")

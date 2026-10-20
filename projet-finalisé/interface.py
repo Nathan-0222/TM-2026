@@ -99,6 +99,8 @@ def page_joueur(id_joueur: int):
     ui.label('Fenêtre de : ' + joueur_actuel.nom)
     ui.label('Votre carte est : ' + joueur_actuel.carteatt.nom)
     ui.image(f'/image/{joueur_actuel.carteatt.nom}.webp').classes('w-30')
+    with ui.expansion('Description de ma carte'):   #sert à afficher description de la carte pour ceux qui ne connaissent pas les règles
+        ui.label(joueur_actuel.carteatt.description)
     ui.separator()
 
 
@@ -159,19 +161,22 @@ def page_joueur(id_joueur: int):
                     (partie_en_cours.phase == "loups" and joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.nom not in partie_en_cours.a_deja_vote ) or
                     (partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere") or
                     (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur") or
-                    (partie_en_cours.phase == "vote_jour" and joueur_actuel.nom not in partie_en_cours.a_deja_vote))
+                    (partie_en_cours.phase == "vote_jour" and joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote))   #sinon avant morts pouvaient voter
         
 
         with ui.row():   #permet de mettre boutons en ligne et pas en colonne
             for j in range(len(partie_en_cours.liste_joueurs)):
-                if partie_en_cours.liste_joueurs[j].envie == True:
-                    bouton = ui.button(partie_en_cours.liste_joueurs[j].nom, on_click = lambda j=j :cliquer_cible(j)).props('color="positive"')   #si je mets pas i=i, vu que boucle sera fini, le i pointera forcément la dernière valeur de i qui est le dernier joueur de la liste
+                joueur = partie_en_cours.liste_joueurs[j]
+                nom_bouton = joueur.nom
+                if joueur is joueur_actuel:
+                    nom_bouton = nom_bouton + " (vous)"
 
+                if joueur.envie == True:
+                    bouton = ui.button(nom_bouton, on_click=lambda j=j: cliquer_cible(j)).props('color="positive"')   #si je mets pas i=i, vu que boucle sera fini, le i pointera forcément la dernière valeur de i qui est le dernier joueur de la liste
                     if est_mon_tour == False:
                         bouton.props('color="red"').disable()
-
                 else:
-                    ui.button(partie_en_cours.liste_joueurs[j].nom + " (Mort)").props('color="gray"').disable()
+                    ui.button(nom_bouton + " (Mort : " + joueur.carteatt.nom + ")").props('color="grey"').disable()
 
 
 
@@ -206,18 +211,27 @@ def page_joueur(id_joueur: int):
 
         #loup
         elif partie_en_cours.phase == "loups":
+
             if joueur_actuel.carteatt.nom == "PetiteFille" and joueur_actuel.envie == True:
                 ui.label("(La Petite-Fille peut entre-ouvrir les yeux pour espionner...)")
 
+            if joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.envie == True:   #rajout dàtail : affichage mieux pour combien de loups ont voté, et si c'est à son tour ou non de voter
+                nb_loups = 0
+                for j in partie_en_cours.liste_joueurs:
+                    if j.carteatt.nom == "LoupGarou" and j.envie == True:
+                        nb_loups += 1
 
-            ui.label("Veuillez à vous mettre d'accord les Loups-Garous, si vous ne le faites pas le jeu déterminera au hasard entre vos choix la victime finale.")
-            if joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.envie == True:
-                if joueur_actuel.nom not in partie_en_cours.a_deja_vote:
-                    ui.label("C'est au tour de " + joueur_actuel.nom + " (Loup-Garou) de voter :")
+                ui.label("Mettez-vous d'accord, Loups-Garous, sinon le jeu tirera au hasard entre vos choix.")
+                ui.label(str(len(partie_en_cours.a_deja_vote)) + "/" + str(nb_loups) + " loup(s) ont voté")   #nouvel affichage
+                if joueur_actuel.nom in partie_en_cours.a_deja_vote:
+                    ui.label("Vous avez voté, en attente des autres loups...")
+                else:
+                    ui.label("C'est à vous de voter :")
 
 
         #sorciere
         elif partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere":
+
             ui.label("La Sorcière se réveille.")
             if partie_en_cours.victime_loups != None:
                 ui.label("Les loups ont choisi : " + partie_en_cours.victime_loups.nom)
@@ -231,11 +245,13 @@ def page_joueur(id_joueur: int):
                 partie_en_cours.action_sorciere(3, 0)
                 tout_rafraichir()
 
-            ui.button("Sauver la victime", on_click=cliquer_sauver)
+            if joueur_actuel.carteatt.potion_vie == 1 and partie_en_cours.victime_loups != None:   #Comme ça présent que si besoin
+                ui.button("Sauver la victime", on_click=cliquer_sauver)
             ui.button("Ne rien faire", on_click=cliquer_rien)
 
 
         elif partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur":
+
             ui.label("Le Chasseur tire sa dernière balle ! Choisissez sa cible :")
 
 
@@ -262,8 +278,20 @@ def page_joueur(id_joueur: int):
 
         #vote matin
         elif partie_en_cours.phase == "vote_jour":
-            if joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote:
-                ui.label("C'est au tour de " + joueur_actuel.nom + " de voter :")
+
+            nb_vivants = 0   #même affichage ue pour les loups
+            for j in partie_en_cours.liste_joueurs:
+                if j.envie == True:
+                    nb_vivants += 1
+
+            ui.label(str(len(partie_en_cours.a_deja_vote)) + "/" + str(nb_vivants) + " joueurs ont voté")   #nouvel affichage
+            if joueur_actuel.envie == True:
+                if joueur_actuel.nom in partie_en_cours.a_deja_vote:
+                    ui.label("Vous avez voté, en attente des autres...")
+                else:
+                    ui.label("C'est à vous de voter :")
+            else:
+                ui.label("Vous êtes mort, vous ne pouvez plus voter.")
 
 
         #fin potentiel

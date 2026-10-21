@@ -209,6 +209,31 @@ def page_joueur(id_joueur: int):
             ui.label("La Voyante se réveille. Choisissez un joueur à observer :")
 
 
+        #verif carte pour voleur
+        elif partie_en_cours.phase == "verif_carte":
+
+            nb_vivants = 0
+            for j in partie_en_cours.liste_joueurs:
+                if j.envie == True:
+                    nb_vivants += 1
+
+            ui.label("Tout le monde vérifie sa carte (en haut de l'écran)")
+            ui.label(str(len(partie_en_cours.a_deja_vote)) + "/" + str(nb_vivants) + "ont déjà votés")
+
+            def cliquer_carte_vue():
+                partie_en_cours.a_deja_vote.append(joueur_actuel.nom)
+
+                if len(partie_en_cours.a_deja_vote) == nb_vivants:
+                    partie_en_cours.a_deja_vote = []   #réinitialise liste
+                    partie_en_cours.passer_phase_nuit("voleur")   #reprend nuit
+
+                tout_rafraichir()
+
+            if joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote:
+                ui.button("J'ai vu ma carte", on_click=cliquer_carte_vue)
+
+
+
         #loup
         elif partie_en_cours.phase == "loups":
 
@@ -319,7 +344,8 @@ def page_joueur(id_joueur: int):
         "messages" : partie_en_cours.message,
         "nb_morts" : 0,
         "nb_votes" : len(partie_en_cours.a_deja_vote),
-        "prive" : joueur_actuel.carteatt.message_prive 
+        "prive" : joueur_actuel.carteatt.message_prive,
+        "carte" : joueur_actuel.carteatt.nom   #pour bug voleur aussi
     }
 
     def verifier_changements():
@@ -334,8 +360,13 @@ def page_joueur(id_joueur: int):
             "messages" : partie_en_cours.message,
             "nb_morts" : nb_morts,
             "nb_votes" : len(partie_en_cours.a_deja_vote),
-            "prive" : joueur_actuel.carteatt.message_prive
+            "prive" : joueur_actuel.carteatt.message_prive,
+            "carte" : joueur_actuel.carteatt.nom   #pour bug voleur aussi
         }
+
+        if etat_actuel["carte"] != dernier_etat["carte"]:   #bug voleur : carte affichés sur personne concerné ne change pas
+            ui.navigate.reload()
+            return
 
         if (etat_actuel["messages"] != dernier_etat["messages"]) or (etat_actuel["prive"] != dernier_etat["prive"]) :
             zone_message.refresh()

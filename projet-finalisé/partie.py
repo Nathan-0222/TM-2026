@@ -180,7 +180,12 @@ class Partie:
             if j.carteatt.nom == "Voleur" and j.envie == True:
                 j.carteatt.capacite_voleur(self.liste_joueurs, choix_voleur, index_cible_voleur)
 
-        self.passer_phase_nuit("voleur")
+        if choix_voleur == True:   #permet de lancer une phase dans laquelle tout le monde regarde sa care après vol -> résout confusion
+            self.phase = "verif_carte"
+            self.a_deja_vote = []
+            self.message = "Le Voleur a agi... TOUT LE VILLAGE SE RÉVEILLE pour vérifier sa carte !!"
+        else:
+            self.passer_phase_nuit("voleur")
 
 
     def action_voyante(self, index_joueur):

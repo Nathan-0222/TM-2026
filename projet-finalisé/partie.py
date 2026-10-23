@@ -1,8 +1,22 @@
 import random
 from joueur import *
 from carte import *
+from nicegui import ui    #obligatoire car on utilise une fonction importé de la biblio nicegui dans la méthode jouer de la class Message
+
+
+class Message:   #ajout de la class Message comme mentionné par prof
+
+    def __init__(self, cle, texte):
+        self.cle = cle
+        self.texte = texte
+
+    def jouer(self):
+        return ui.audio(f"/sons/{self.cle}.mp3", autoplay = True)
+    
+
 
 class Partie:
+
     def __init__(self, mdp):
         self.mdp = mdp
         self.liste_joueurs = [] 
@@ -10,7 +24,8 @@ class Partie:
         self.villageois = []
 
         self.phase = "inscription"
-        self.message = "Bonjour, inscrivez de 7 à 15 joueurs pour commencer !!"
+        self.message = Message("","Bonjour, inscrivez de 7 à 15 joueurs pour commencer !!")
+        self.messages = []   #liste de messages pour les sons ensuite
 
         self.a_cupidon = False   #rôle en booléens
         self.a_voleur = False
@@ -27,6 +42,15 @@ class Partie:
         self.a_deja_vote = []   #Liste pour savoir qui à déjà voté
         self.prochaine_phase = "matin"   #chasseur
 
+
+    def annoncer(self, cle, texte=""):
+
+        message = Message(cle, texte)
+        self.messages.append(message)
+        if texte != "":
+            self.message = message
+
+
     def ajouter_joueur(self, nom_joueur):
 
         for j in self.liste_joueurs:   #Encore petit détail : Empêcher deux mêmes noms dans partie. Le lower() sert donc à identifier tous les noms de la même façcon, sans ca un Nathan ne serait pas le même nom que un nathan
@@ -35,7 +59,7 @@ class Partie:
             
         nouveau_joueur = Joueur(nom_joueur, None) 
         self.liste_joueurs.append(nouveau_joueur)
-        self.message = f"{nom_joueur} a rejoint la partie !!"
+        self.message = Message("",f"{nom_joueur} a rejoint la partie !!")
         return True
 
     def distribuer_cartes (self):
@@ -70,9 +94,6 @@ class Partie:
         elif self.nombre == 15:
              self.pioche = [LoupGarou(), LoupGarou(), LoupGarou(), Voyante(), Sorciere(), Chasseur(), PetiteFille(), Cupidon(), Voleur(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois(), Villageois()]
 
-        self.message = "La composition de la partie est :\n"
-        for carte in self.pioche:
-            self.message = self.message + "-" + carte.nom + "\n"
 
         for carte in self.pioche:
             if carte.nom == "Cupidon":
@@ -93,17 +114,18 @@ class Partie:
         for i in range (self.nombre):
              self.liste_joueurs[i].carteatt = self.pioche[i]
 
-        self.message = "Les rôles sont attribuées !!!"
+        self.message = Message("","Les rôles sont attribuées !!!")   #changement de tous les messages d'avant pour les définir avec la class
 
 
     def commencer_partie(self):
 
         self.distribuer_cartes()
         self.première_nuit = True
-        self.message = "Début de la partie \n --- LE VILLAGE S'ENDORT... ---"
+        self.annoncer("nuit", "Début de la partie \n --- LE VILLAGE S'ENDORT... ---")
 
         if self.a_cupidon:
             self.phase = "cupidon"
+            self.annoncer("cupidon_reveil", "Cupidon se réveille !!")   #quand il y a un audio on utilise la fonction annoncer sinon on crée juste un message sans clé
         else:
             self.passer_phase_nuit("cupidon")
 
@@ -112,25 +134,28 @@ class Partie:
 
         if phase_actuelle == "cupidon":
 
-            if self.a_voleur == True:
+            voleur_vivant = False
+            for j in self.liste_joueurs:
+                if j.carteatt.nom == "Voleur" and j.envie == True:
+                    voleur_vivant = True 
+
+            if voleur_vivant == True:
                 self.phase = "voleur"
-                self.message = "Cupidon se rendort... \nLe Voleur se réveille !!"
+                self.annoncer("voleur_reveil", "Le Voleur se réveille !!")
 
             else:
                 phase_actuelle = "voleur"
 
         if phase_actuelle == "voleur":
 
+            self.a_voyante = False
             for j in self.liste_joueurs:
                 if j.carteatt.nom == "Voyante" and j.envie == True:
                     self.a_voyante = True
                     
             if self.a_voyante == True:
                 self.phase = "voyante"
-                if self.a_voleur == True:
-                    self.message = "Le Voleur se rendort... \nLa Voyante se réveille !!"
-                else:
-                    self.message = "La Voyante se réveille !!"
+                self.annoncer("voyante_reveil", "La Voyante se réveille !!")
                     
             else:
                 phase_actuelle = "voyante"
@@ -141,7 +166,7 @@ class Partie:
             self.a_deja_vote = []
             for j in self.liste_joueurs:
                 j.nb_vote = 0
-            self.message = self.message + "\nLes Loups se réveillent pour choisir leur victime !!"
+            self.annoncer("loups_reveil", "Les Loups se réveillent pour choisir leur victime !!")
 
         
         if phase_actuelle == "loups":
@@ -153,7 +178,7 @@ class Partie:
         
             if sorciere_present == True:
                 self.phase = "sorciere"
-                self.message = "Les Loups Garous se rendorment... \nLa Sorcière se réveille !!"
+                self.annoncer("sorciere_reveil", "La Sorcière se réveille !!")
         
             else:
                 phase_actuelle = "sorciere"  #essai correction bug
@@ -169,8 +194,8 @@ class Partie:
         for j in self.liste_joueurs:
             if j.carteatt.nom == "Cupidon" and j.envie == True:
                 j.carteatt.capacite_cupidon(self.liste_joueurs, index_j1, index_j2)
-                self.message = "Cupidon a bien tiré sa flèche et a mis au monde un tout nouveau couple !!"
-    
+
+        self.annoncer("cupidon_rendort")
         self.passer_phase_nuit("cupidon")
 
 
@@ -183,8 +208,9 @@ class Partie:
         if choix_voleur == True:   #permet de lancer une phase dans laquelle tout le monde regarde sa care après vol -> résout confusion
             self.phase = "verif_carte"
             self.a_deja_vote = []
-            self.message = "Le Voleur a agi... TOUT LE VILLAGE SE RÉVEILLE pour vérifier sa carte !!"
+            self.annoncer("verif_carte", "Le Voleur a agi... TOUT LE VILLAGE SE RÉVEILLE pour vérifier sa carte !!")
         else:
+            self.annoncer("voleur_rendort")
             self.passer_phase_nuit("voleur")
 
 
@@ -193,7 +219,8 @@ class Partie:
         for j in self.liste_joueurs:
             if j.carteatt.nom == "Voyante" and j.envie == True:
                 j.carteatt.message_prive = j.carteatt.capacite_voyante(self.liste_joueurs, index_joueur)
-        
+
+        self.annoncer("voyante_rendort")
         self.passer_phase_nuit("voyante")
 
 
@@ -227,7 +254,8 @@ class Partie:
             for j in self.liste_joueurs:
                 j.nb_vote = 0   #compteur à 0 pour vote_jour
             self.a_deja_vote = []
- 
+
+            self.annoncer("loups_rendort")
             self.passer_phase_nuit("loups")
 
 
@@ -250,6 +278,7 @@ class Partie:
                 else:
                     j.carteatt.message_prive = "Tu n'as rien fait cette nuit."
 
+        self.annoncer("sorciere_rendort")
         self.passer_phase_nuit("sorciere")   #problème de tabulation qui avait fait bugué résolution nuit
 
 
@@ -258,7 +287,8 @@ class Partie:
         cible = self.liste_joueurs[index_cible_chasseur]
         if cible.envie == True:
             cible.mourir()
-            self.message = self.message + "\nLe Chasseur a emporté " + cible.nom + "dans sa tombe !"
+            self.message.texte = self.message.texte + "\nLe Chasseur a emporté " + cible.nom + " dans sa tombe !"
+            self.annoncer("mort")
 
         if not self.vérification_victoire():
             if self.prochaine_phase == "matin":
@@ -279,18 +309,20 @@ class Partie:
         if self.victime_sorciere != None:
             morts_cette_nuit.append(self.victime_sorciere)
 
-        self.message = " LE SOLEIL SE LÈVE \nLe village se réveille...\n"
+        self.annoncer("jour"," LE SOLEIL SE LÈVE \nLe village se réveille...\n")
 
         chasseur_mort = False
 
         if len(morts_cette_nuit) == 0:
-            self.message = self.message + "Personne n'est mort cette nuit !!!"
+            self.message.texte = self.message.texte + "Personne n'est mort cette nuit !!!"
+            self.annoncer("personne_mort")
 
         else:
+            self.annoncer("mort_reveil")
             for j in morts_cette_nuit:
                 if j.envie == True:
                     j.mourir()
-                    self.message = self.message + "Le joueur " + j.nom + " nous a quitté cette nuit, sa carte était : " + j.carteatt.nom + "\n"
+                    self.message.texte = self.message.texte + "Le joueur " + j.nom + " nous a quitté cette nuit, sa carte était : " + j.carteatt.nom + "\n"
                     if j.carteatt.nom == "Chasseur":
                         chasseur_mort = True
 
@@ -304,7 +336,8 @@ class Partie:
         if chasseur_mort == True:
             self.phase = "chasseur"
             self.prochaine_phase = "matin"
-            self.message += "\nLe Chasseur doit désigner sa cible !"
+            self.message.texte = self.message.texte + "\nLe Chasseur doit désigner sa cible !"
+            self.annoncer("chasseur")
 
         else:
             self.phase = "matin"
@@ -323,12 +356,12 @@ class Partie:
                     villageois += 1
 
         if loups == 0 :
-            self.message = self.message + "VICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !"
+            self.annoncer("victoire", self.message.texte + "VICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !")
             self.phase = "fin"
             return True
         
         elif loups >= villageois:
-            self.message = self.message + "DÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village."
+            self.annoncer("defaite", self.message.texte + "DÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village.")
             self.phase = "fin"
             return True
         
@@ -365,7 +398,7 @@ class Partie:
 
             victime_village = random.choice(en_tete)
 
-            self.message = "Le joueur " + victime_village.nom + " est mort par vote. Sa carte était : " + victime_village.carteatt.nom
+            self.annoncer("mort", "Le joueur " + victime_village.nom + " est mort par vote. Sa carte était : " + victime_village.carteatt.nom)
             victime_village.mourir()
          
             for j in self.liste_joueurs:
@@ -380,9 +413,11 @@ class Partie:
                 if victime_village.carteatt.nom == "Chasseur":
                     self.phase = "chasseur"
                     self.prochaine_phase = "nuit"
-                    self.message = self.message + "\nLe Chasseur est mort et doit tirer !"
+                    self.message.texte = self.message.texte + "\nLe Chasseur est mort et doit tirer !"
+                    self.annoncer("chasseur")
                 else:
                     for j in self.liste_joueurs:   #reinitialise les messages prive de chaque joueur
                         j.carteatt.message_prive = ""
-                    self.message = self.message + "\nLA NUIT TOMBE..."
+                    self.message.texte = self.message.texte + "\nLA NUIT TOMBE..."
+                    self.annoncer("nuit")
                     self.passer_phase_nuit("cupidon")

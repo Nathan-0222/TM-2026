@@ -3,7 +3,9 @@ from nicegui import ui, app
 from partie import *
 
 dossier_images = Path(__file__).parent / 'image'   #indique chemin d'accès depuis l'endroit que lance le terminal initialement
+dossier_sons = Path(__file__).parent / 'sons'   #même chose que pour images
 app.add_static_files('/image', dossier_images)
+app.add_static_files('/sons', dossier_sons)
 
 partie_en_cours = Partie("ciao")
 
@@ -84,6 +86,37 @@ def page_liens():
         nom_j = partie_en_cours.liste_joueurs[i].nom
         ui.button(nom_j, on_click=lambda i=i: ui.navigate.to(f'/joueur/{i}', new_tab = True))
 
+    nb_joues = [0]   #combien de sons ont été joués
+    occupe = [False]   #savoir si son est déjà en cours. évite que sons "écrasé"
+
+    @ui.refreshable
+    def zone_sons():
+        if occupe[0] == True:
+            lecteur = partie_en_cours.messages[nb_joues[0]].jouer()   #lance le son à l'instance de la valeur de la variable nb_joues : si nb_joues = 1 alors cela prendra le 2ème message de la liste paartie_en_cours.messages et jouera l'audio
+            lecteur.on('ended', son_fini)
+            lecteur.on('error', son_erreur)
+
+    def son_erreur():   #débuguage : voir quels sons sont pas lancés
+        ui.notify('Fichier introuvable : ' + partie_en_cours.messages[nb_joues[0]].cle + '.mp3')
+        son_fini()
+
+    def son_fini():   #mentionne que son est fini -> nouveau peut jouer donc occupe[0] devient False
+        nb_joues[0] += 1
+        occupe[0] = False
+        zone_sons.refresh()
+
+    def verifier_son():
+        if occupe[0] == False and nb_joues[0] < len(partie_en_cours.messages):   #Si aucun son joue (occupe = False) alors possible de lancer le prochain son, si d'autres messages ont été crées en ce temps
+            occupe[0] = True
+            zone_sons.refresh()
+
+    def lancer_naration():
+        ui.timer(0.3, verifier_son)   #verifie si possible de lancer son toutes les 0,3 secondes
+
+    ui.separator()
+    ui.button("Lancer la Narration ", on_click=lancer_naration)
+    zone_sons()
+
 
 
 @ui.page('/joueur/{id_joueur}')
@@ -106,7 +139,7 @@ def page_joueur(id_joueur: int):
 
     @ui.refreshable
     def zone_message():
-        ui.label(partie_en_cours.message)   #zone qui remplace print(message jeu)
+        ui.label(partie_en_cours.message.texte)   #zone qui remplace print(message jeu)
         if joueur_actuel.carteatt.message_prive != "":
             ui.label("Message privé : " + joueur_actuel.carteatt.message_prive)
 
@@ -225,6 +258,7 @@ def page_joueur(id_joueur: int):
 
                 if len(partie_en_cours.a_deja_vote) == nb_vivants:
                     partie_en_cours.a_deja_vote = []   #réinitialise liste
+                    partie_en_cours.annoncer("verif_carte_fin")
                     partie_en_cours.passer_phase_nuit("voleur")   #reprend nuit
 
                 tout_rafraichir()
@@ -295,7 +329,7 @@ def page_joueur(id_joueur: int):
                     for j in partie_en_cours.liste_joueurs:
                         j.nb_vote = 0
                     partie_en_cours.phase = "vote_jour"
-                    partie_en_cours.message = "--- LE VILLAGE VOTE ---\nChaque joueur vivant vote pour éliminer un suspect."
+                    partie_en_cours.annoncer("vote", "--- LE VILLAGE VOTE ---\nChaque joueur vivant vote pour éliminer un suspect.")
                     tout_rafraichir()
 
             ui.button("Passer au vote du village →", on_click=cliquer_passer_au_vote)
@@ -341,7 +375,7 @@ def page_joueur(id_joueur: int):
 
     dernier_etat = {   #inspirer du modèle pour raffraîchir les pages des différents joueurs dans le fichier app3.py de la prof
         "phase" : partie_en_cours.phase,
-        "messages" : partie_en_cours.message,
+        "messages" : partie_en_cours.message.texte,
         "nb_morts" : 0,
         "nb_votes" : len(partie_en_cours.a_deja_vote),
         "prive" : joueur_actuel.carteatt.message_prive,
@@ -357,7 +391,7 @@ def page_joueur(id_joueur: int):
 
         etat_actuel = {
             "phase" : partie_en_cours.phase,
-            "messages" : partie_en_cours.message,
+            "messages" : partie_en_cours.message.texte,
             "nb_morts" : nb_morts,
             "nb_votes" : len(partie_en_cours.a_deja_vote),
             "prive" : joueur_actuel.carteatt.message_prive,

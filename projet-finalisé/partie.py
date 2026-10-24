@@ -323,6 +323,9 @@ class Partie:
                 if j.envie == True:
                     j.mourir()
                     self.message.texte = self.message.texte + "Le joueur " + j.nom + " nous a quitté cette nuit, sa carte était : " + j.carteatt.nom + "\n"
+
+                    if j.amoureux != None and j.amoureux.envie == False:
+                        self.message.texte = self.message.texte + "Et par un immense chagrin, son amoureu(x)/(se) " + j.amoureux.nom + " est mort(e) de tristesse ! Sa carte était : " + j.amoureux.carteatt.nom + "\n"
                     if j.carteatt.nom == "Chasseur":
                         chasseur_mort = True
 
@@ -400,6 +403,9 @@ class Partie:
 
             self.annoncer("mort", "Le joueur " + victime_village.nom + " est mort par vote. Sa carte était : " + victime_village.carteatt.nom)
             victime_village.mourir()
+
+            if victime_village.amoureux != None and victime_village.amoureux.envie == False:
+                self.message.texte = self.message.texte + "\nBrisé(e) par le chagrin, son amoureu(x)/(se) " + victime_village.amoureux.nom + " est mort(e) de tristesse à son tour ! Sa carte était : " + victime_village.amoureux.carteatt.nom
          
             for j in self.liste_joueurs:
                 j.nb_vote = 0   #compteur à 0 pour vote_jour

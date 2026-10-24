@@ -190,12 +190,12 @@ def page_joueur(id_joueur: int):
 
                 tout_rafraichir()
 
-            est_mon_tour = ((partie_en_cours.phase == "cupidon" and joueur_actuel.carteatt.nom == "Cupidon") or
-                        (partie_en_cours.phase == "voleur" and joueur_actuel.carteatt.nom == "Voleur") or
-                        (partie_en_cours.phase == "voyante" and joueur_actuel.carteatt.nom == "Voyante") or
-                        (partie_en_cours.phase == "loups" and joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.nom not in partie_en_cours.a_deja_vote ) or
-                        (partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere") or
-                        (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur") or
+            est_mon_tour = ((partie_en_cours.phase == "cupidon" and joueur_actuel.carteatt.nom == "Cupidon" and joueur_actuel.envie == True) or
+                        (partie_en_cours.phase == "voleur" and joueur_actuel.carteatt.nom == "Voleur" and joueur_actuel.envie == True) or
+                        (partie_en_cours.phase == "voyante" and joueur_actuel.carteatt.nom == "Voyante" and joueur_actuel.envie == True) or
+                        (partie_en_cours.phase == "loups" and joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote ) or
+                        (partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere" and joueur_actuel.envie == True) or
+                        (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur" and joueur_actuel.envie == True) or
                         (partie_en_cours.phase == "vote_jour" and joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote))   #sinon avant morts pouvaient voter
             
 

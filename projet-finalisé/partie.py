@@ -359,12 +359,12 @@ class Partie:
                     villageois += 1
 
         if loups == 0 :
-            self.annoncer("victoire", self.message.texte + "VICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !")
+            self.annoncer("victoire", self.message.texte + "\nVICTOIRE ! Tous les Loups-Garous sont morts, les Villageois gagnent !")
             self.phase = "fin"
             return True
         
         elif loups >= villageois:
-            self.annoncer("defaite", self.message.texte + "DÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village.")
+            self.annoncer("defaite", self.message.texte + "\nDÉFAITE ! Les Loups-Garous sont assez nombreux pour dévorer le reste du village.")
             self.phase = "fin"
             return True
         

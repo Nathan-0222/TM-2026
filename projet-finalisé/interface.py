@@ -141,9 +141,9 @@ def page_joueur(id_joueur: int):
 
         @ui.refreshable
         def zone_message():
-            ui.label(partie_en_cours.message.texte)   #zone qui remplace print(message jeu)
+            ui.label(partie_en_cours.message.texte).style('white-space : pre-line')   #zone qui remplace print(message jeu)
             if joueur_actuel.carteatt.message_prive != "":
-                ui.label("Message privé : " + joueur_actuel.carteatt.message_prive)
+                ui.label("Message privé : " + joueur_actuel.carteatt.message_prive).style('white-space : pre-line')   #ajout du white-space : pre-line pour permettre les retours à la ligne (les label ne prenaient pas en compte les \n)
 
 
         @ui.refreshable
@@ -195,7 +195,7 @@ def page_joueur(id_joueur: int):
                         (partie_en_cours.phase == "voyante" and joueur_actuel.carteatt.nom == "Voyante" and joueur_actuel.envie == True) or
                         (partie_en_cours.phase == "loups" and joueur_actuel.carteatt.nom == "LoupGarou" and joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote ) or
                         (partie_en_cours.phase == "sorciere" and joueur_actuel.carteatt.nom == "Sorciere" and joueur_actuel.envie == True) or
-                        (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur" and joueur_actuel.envie == True) or
+                        (partie_en_cours.phase == "chasseur" and joueur_actuel.carteatt.nom == "Chasseur") or
                         (partie_en_cours.phase == "vote_jour" and joueur_actuel.envie == True and joueur_actuel.nom not in partie_en_cours.a_deja_vote))   #sinon avant morts pouvaient voter
             
 
